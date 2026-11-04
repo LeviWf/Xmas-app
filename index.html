@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karácsonyi Kívánságlista 🎄</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f2f7f4;
+      background-image: radial-gradient(#14532d 0.55px, transparent 0.55px), radial-gradient(#991b1b 0.55px, #f2f7f4 0.55px);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
+    }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Fektetett Candy Cane Betöltő Animáció (Balról Jobbra) */
+    #loader-overlay {
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    }
+    .candy-fill-rect {
+      animation: fillRightCandy 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes fillRightCandy {
+      0% { width: 0px; }
+      100% { width: 220px; }
+    }
+    .cane-glow {
+      filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.45));
+    }
+  </style>
+</head>
+<body class="text-slate-800 pb-24 min-h-screen">
+
+  <!-- ================= BEÁLLÍTÁSOK / SUPABASE ================= -->
+  <script>
+    // IDE ILLESZD BE A SUPABASE ADATAIDAT ÉLESÍTÉSHEZ:
+    const SUPABASE_URL = "https://xxjrqdscbjdgznoagxjr.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_IziomCzF0wlgxBQOJgLV-Q_oyB5P6lE"; 
+  </script>
+
+  <!-- ================= FEKTETETT CANDY CANE BETÖLTŐ KÉPERNYŐ ================= -->
+  <div id="loader-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950 via-green-950 to-red-950 text-white px-4">
+    <div class="relative w-64 sm:w-72 h-28 flex items-center justify-center cane-glow">
+      <svg viewBox="0 0 220 100" class="w-full h-full overflow-visible">
+        <defs>
+          <!-- Élénk piros-fehér cukorpálca csíkozás -->
+          <pattern id="candy-stripes-vibrant" width="24" height="24" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <rect width="24" height="24" fill="#ffffff" />
+            <rect width="12" height="24" fill="#dc2626" />
+          </pattern>
+
+          <!-- Tompa, halvány alap csíkozás -->
+          <pattern id="candy-stripes-dull" width="24" height="24" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <rect width="24" height="24" fill="#475569" opacity="0.35" />
+            <rect width="12" height="24" fill="#7f1d1d" opacity="0.35" />
+          </pattern>
+
+          <!-- Maszk, ami BALRÓL JOBBRA tölti fel az élénk színt -->
+          <clipPath id="candy-fill-clip">
+            <rect class="candy-fill-rect" x="0" y="0" width="0" height="100" />
+          </clipPath>
+        </defs>
+
+        <!-- 1. Réteg: Tompa, sötét fektetett Candy Cane -->
+        <path d="M 65 72 A 24 24 0 0 1 65 24 L 195 24" fill="none" stroke="url(#candy-stripes-dull)" stroke-width="22" stroke-linecap="round" />
+
+        <!-- 2. Réteg: Élénk piros-fehér fektetett Candy Cane (balról jobbra töltődik) -->
+        <g clip-path="url(#candy-fill-clip)">
+          <path d="M 65 72 A 24 24 0 0 1 65 24 L 195 24" fill="none" stroke="url(#candy-stripes-vibrant)" stroke-width="22" stroke-linecap="round" />
+        </g>
+
+        <!-- 3. Réteg: Finom ünnepi fénycsík -->
+        <path d="M 65 72 A 24 24 0 0 1 65 24 L 195 24" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="22" stroke-linecap="round" />
+      </svg>
+    </div>
+
+    <div class="mt-2 text-center">
+      <p class="text-xl font-extrabold tracking-wide text-red-100 flex items-center justify-center gap-2">
+        <span>🎄</span> Ünnepi hangolódás... <span id="loader-percent" class="text-amber-300">0%</span>
+      </p>
+      <p class="text-xs text-emerald-300/80 mt-1">Kívánságlisták és táblák betöltése</p>
+    </div>
+  </div>
+
+  <!-- ================= FEJLÉC (Karácsonyi Zöld & Piros) ================= -->
+  <header class="bg-gradient-to-r from-emerald-900 via-green-800 to-red-900 text-white shadow-xl border-b-4 border-red-600 sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 py-3.5 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-red-600/90 border border-red-400 flex items-center justify-center text-2xl shadow-md">
+          🎅
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg leading-tight tracking-tight flex items-center gap-2">
+            Karácsonyi Kívánságok
+          </h1>
+          <div class="flex items-center gap-2">
+            <p id="mode-badge" class="text-[11px] text-amber-300 font-medium hidden">🛠️ Demo Mód</p>
+            <button id="reset-demo-btn" onclick="resetDemo()" class="text-[10px] underline text-emerald-200 hover:text-white hidden" title="Alaphelyzetbe állítja a teszt adatokat">🔄 Demo Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="user-controls" class="hidden flex items-center space-x-2 sm:space-x-3">
+        <span class="text-xs sm:text-sm bg-emerald-950/70 border border-emerald-600/50 px-3 py-1.5 rounded-full font-semibold text-emerald-100">
+          🦌 <span id="current-user-display"></span>
+        </span>
+        <button onclick="logout()" class="text-xs bg-red-700 hover:bg-red-600 border border-red-500 px-3 py-1.5 rounded-xl font-semibold transition shadow-sm">
+          Kilépés
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 mt-6">
+
+    <!-- ================= 1. BELÉPÉS / REGISZTRÁCIÓ NÉZET ================= -->
+    <div id="auth-view" class="max-w-md mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-xl border-2 border-emerald-800/15 mt-8 fade-in relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 via-emerald-600 to-red-600"></div>
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-red-700 text-white text-3xl mb-3 shadow-md">🎁</div>
+        <h2 class="text-2xl font-extrabold text-emerald-950">Családi Ajándéktervező</h2>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">Lépj be a neveddel és PIN kódoddal! Ha még nincs profilod, automatikusan elkészítjük.</p>
+      </div>
+
+      <form onsubmit="handleAuth(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1">Keresztneved / Beceneved</label>
+          <input type="text" id="auth-username" required placeholder="pl. Levi, Anya, Nagymama..." 
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 outline-none transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1">4 jegyű PIN kód</label>
+          <input type="password" id="auth-pin" required pattern="[0-9]{4}" maxlength="4" inputmode="numeric" placeholder="••••" 
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition text-center text-xl tracking-widest font-bold text-red-700">
+        </div>
+        <div id="auth-error" class="text-sm text-red-700 bg-red-50 border border-red-200 p-3 rounded-xl hidden font-medium"></div>
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
+          🎄 Belépés az Ünnepi Listába →
+        </button>
+      </form>
+
+      <!-- Demo súgó doboz -->
+      <div id="demo-login-hint" class="mt-6 pt-4 border-t border-slate-200 text-xs text-slate-500 hidden">
+        <p class="font-bold text-emerald-900 mb-1">🧪 Kipróbálható Demo Profilok (PIN: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-red-600">1234</code>):</p>
+        <div class="flex flex-wrap gap-1.5 mt-2">
+          <button onclick="quickDemoLogin('Levi')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold transition">👤 Levi (Mindkét csoport)</button>
+          <button onclick="quickDemoLogin('Barátnőm')" class="bg-red-50 hover:bg-red-100 text-red-900 border border-red-200 px-2.5 py-1 rounded-lg font-semibold transition">👤 Barátnőm (1. csoport)</button>
+          <button onclick="quickDemoLogin('Anya')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold transition">👤 Anya (Mindkét csoport)</button>
+          <button onclick="quickDemoLogin('Nagymama')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-1 rounded-lg font-semibold transition">👤 Nagymama (2. csoport)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2. FŐ ALKALMAZÁS NÉZET ================= -->
+    <div id="app-view" class="hidden fade-in">
+      
+      <!-- Fő Navigációs Fülek (Piros - Zöld Karácsonyi stílus) -->
+      <div class="grid grid-cols-3 bg-emerald-950/90 p-1.5 rounded-2xl mb-6 shadow-md border border-emerald-800">
+        <button onclick="switchTab('my-list')" id="tab-my-list" class="py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition bg-red-600 text-white shadow">
+          📝 Saját Listám
+        </button>
+        <button onclick="switchTab('board')" id="tab-board" class="py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white">
+          🎄 Családi Táblák
+        </button>
+        <button onclick="switchTab('groups')" id="tab-groups" class="py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white">
+          👨‍👩‍👧‍👦 Csoportjaim
+        </button>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- A) SAJÁT KÍVÁNSÁGLISTÁM FÜL                              -->
+      <!-- ======================================================== -->
+      <div id="section-my-list" class="space-y-6">
+        
+        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-md border-2 border-emerald-800/10">
+          <h3 class="font-extrabold text-emerald-950 mb-1 flex items-center gap-2 text-base">
+            <span>🎁</span> Új kívánság felírása a listámra
+          </h3>
+          <p class="text-xs text-slate-500 mb-4">Elég egyszer felírnod ide! Minden csoportban, aminek tagja vagy, ugyanezt a listádat fogják látni a Táblákon.</p>
+
+          <form onsubmit="addWish(event, false)" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input type="text" id="wish-title" required placeholder="Ajándék neve (pl. Társasjáték, Parfüm...)" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none">
+              <input type="url" id="wish-link" placeholder="Bolti link (opcionális - https://...)" 
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <input type="text" id="wish-note" placeholder="Megjegyzés (pl. M-es méret, fekete szín)" 
+                class="sm:col-span-2 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-600 outline-none">
+              <select id="wish-priority" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:ring-2 focus:ring-emerald-600 outline-none font-medium">
+                <option value="normal">🌲 Örülnék neki</option>
+                <option value="high">❤️ Nagyon vágyom rá!</option>
+                <option value="low">💡 Csak egy tipp</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-emerald-700 to-green-800 hover:from-emerald-800 hover:to-green-900 text-white text-sm font-bold px-6 py-3 rounded-xl shadow transition">
+              + Hozzáadás a saját listámhoz
+            </button>
+          </form>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-3 px-1">
+            <h3 class="font-extrabold text-emerald-950 text-sm uppercase tracking-wider">Felírt kívánságaim</h3>
+            <span class="text-xs bg-red-100 text-red-800 font-semibold px-2.5 py-1 rounded-full">🤫 Meglepetés-védelem aktív</span>
+          </div>
+          <div id="my-wishes-container" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- B) CSALÁDI TÁBLÁK FÜL (CSOPORT SZŰRÉSSEL)                -->
+      <!-- ======================================================== -->
+      <div id="section-board" class="hidden space-y-5">
+        
+        <!-- 1. Csoport (Kör) Választó Sáv -->
+        <div class="bg-gradient-to-r from-emerald-900 to-green-900 text-white p-4 sm:p-5 rounded-2xl shadow-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+            <div>
+              <span class="text-[11px] uppercase tracking-wider text-emerald-300 font-bold">1. Válaszd ki az ajándékozó kört:</span>
+              <h3 class="font-extrabold text-base sm:text-lg">Melyik csoport tábláit nézed most?</h3>
+            </div>
+            <button onclick="openSecretModal()" class="shrink-0 bg-red-600 hover:bg-red-500 border border-red-400 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow">
+              🕵️ + Titkos meglepetés felírása
+            </button>
+          </div>
+          <!-- Csoport gombok helye -->
+          <div id="board-group-selector" class="flex gap-2 overflow-x-auto pb-1"></div>
+        </div>
+
+        <!-- 2. Családtag szűrő az adott csoporton belül -->
+        <div id="family-filters" class="flex gap-2 overflow-x-auto pb-1"></div>
+
+        <!-- 3. Mások kívánságkártyái (Táblák) -->
+        <div id="board-container" class="space-y-6"></div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- C) CSOPORTOK (AJÁNDÉKOZÓ KÖRÖK) FÜL                      -->
+      <!-- ======================================================== -->
+      <div id="section-groups" class="hidden space-y-6">
+        
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs sm:text-sm text-amber-950">
+          <strong>🎄 Mire jók a csoportok?</strong> Létrehozhatsz külön csoportokat. A Táblákon mindenki csak azoknak a listáját látja, akikkel van közös csoportja – így elkerülhető, hogy olyanok lássák egymás listáját, akik nem ajándékoznak egymásnak!
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Csatlakozás meglévő csoporthoz -->
+          <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-800/10">
+            <h3 class="font-extrabold text-emerald-950 mb-1 flex items-center gap-2">
+              <span>🔑</span> Csatlakozás meghívó kóddal
+            </h3>
+            <p class="text-xs text-slate-500 mb-4">Kaptál egy csoportkódot egy családtagtól? Írd be ide!</p>
+            <form onsubmit="joinGroupByCode(event)" class="flex gap-2">
+              <input type="text" id="join-group-code" required placeholder="Kód (pl. SZUK2026)" 
+                class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm uppercase font-bold tracking-wider focus:ring-2 focus:ring-emerald-600 outline-none">
+              <button type="submit" class="bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shrink-0">
+                Belépés
+              </button>
+            </form>
+            <div id="join-group-msg" class="text-xs mt-2 font-semibold hidden"></div>
+          </div>
+
+          <!-- Új csoport létrehozása -->
+          <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-red-800/10">
+            <h3 class="font-extrabold text-red-950 mb-1 flex items-center gap-2">
+              <span>✨</span> Új csoport alapítása
+            </h3>
+            <p class="text-xs text-slate-500 mb-4">Hozz létre saját kört, és küldd el a kódját az érintetteknek!</p>
+            <form onsubmit="createNewGroup(event)" class="space-y-2.5">
+              <input type="text" id="new-group-name" required placeholder="Csoport neve" 
+                class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-red-600 outline-none">
+              <div class="flex gap-2">
+                <input type="text" id="new-group-code" required placeholder="Válassz kódot (pl. KARACSONY1)" 
+                  class="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 text-sm uppercase font-bold focus:ring-2 focus:ring-red-600 outline-none">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition shrink-0">
+                  + Létrehozás
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Saját csoportjaim listája -->
+        <div>
+          <h3 class="font-extrabold text-emerald-950 text-sm uppercase tracking-wider mb-3 px-1">Csoportok, amiknek tagja vagy</h3>
+          <div id="my-groups-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= TITKOS AJÁNDÉK MODAL ================= -->
+  <div id="secret-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-red-600 fade-in">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-extrabold text-lg text-emerald-950">🕵️ Titkos meglepetés felírása</h3>
+        <button onclick="closeSecretModal()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4">
+        Olyan ajándékot vettél valakinek, ami nincs a listáján? Írd fel ide! <b>Ő sosem látja</b> a saját listáján, de a többiek látják a Táblákon, hogy te már megvetted.
+      </p>
+      <form onsubmit="addWish(event, true)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-emerald-900 mb-1">Kinek szánod?</label>
+          <select id="secret-target-user" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-emerald-900 mb-1">Mi az ajándék?</label>
+          <input type="text" id="secret-title" required placeholder="pl. Páros wellness belépő, Könyv..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-emerald-900 mb-1">Megjegyzés a többieknek</label>
+          <input type="text" id="secret-note" placeholder="pl. Közösbe keresek társat!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+        </div>
+        <div class="flex justify-end gap-2 pt-3">
+          <button type="button" onclick="closeSecretModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Mégse</button>
+          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2 rounded-xl shadow">✅ Felírás (Megvéve)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIKA ================= -->
+  <script>
+    // 1. Fektetett Candy Cane Betöltő Animáció Indítása
+    function runCandyCaneLoader() {
+      const overlay = document.getElementById('loader-overlay');
+      const percentEl = document.getElementById('loader-percent');
+      let pct = 0;
+      const interval = setInterval(() => {
+        pct += 4;
+        if (pct > 100) pct = 100;
+        percentEl.textContent = pct + '%';
+        if (pct === 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+          }, 250);
+        }
+      }, 80);
+    }
+    window.addEventListener('DOMContentLoaded', runCandyCaneLoader);
+
+    // 2. Supabase / Demo Mód inicializálás
+    const isDemoMode = !SUPABASE_URL || !SUPABASE_ANON_KEY;
+    let supabaseClient = null;
+    if (!isDemoMode) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      document.getElementById('mode-badge').classList.remove('hidden');
+      document.getElementById('reset-demo-btn').classList.remove('hidden');
+      document.getElementById('demo-login-hint').classList.remove('hidden');
+    }
+
+    let currentUser = localStorage.getItem('xmas_v3_user') || null;
+    let selectedGroupCode = 'ALL_MY_GROUPS';
+    let selectedPersonFilter = 'ALL';
+    let allUsers = [];
+    let allGroups = [];
+    let allWishes = [];
+
+    // Demo alapadatok
+    function initDemoData() {
+      if (!localStorage.getItem('xmas_v3_demo_users')) {
+        const demoGroups = [
+          { id: 'g1', name: '🏠 Szűk Családi Kör', code: 'SZUK2026', created_by: 'Levi' },
+          { id: 'g2', name: '🎄 Nagycsaládi Karácsony', code: 'NAGY2026', created_by: 'Anya' }
+        ];
+        const demoUsers = [
+          { username: 'Levi', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Barátnőm', pin: '1234', groups: ['SZUK2026'] },
+          { username: 'Anya', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Apa', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Nagymama', pin: '1234', groups: ['NAGY2026'] }
+        ];
+        const demoWishes = [
+          { id: '1', owner_name: 'Barátnőm', title: 'Macskás kaparófa cicának', link: 'https://google.com', note: 'Bézs színű', priority: 'high', status: 'available', claimed_by: null, is_secret: false, deleted_by_owner: false },
+          { id: '2', owner_name: 'Barátnőm', title: 'Fahéjas illatgyertya szett', link: '', note: '', priority: 'normal', status: 'bought', claimed_by: 'Anya', is_secret: false, deleted_by_owner: false },
+          { id: '3', owner_name: 'Anya', title: 'Jénai hőálló üvegtál szett', link: 'https://google.com', note: 'Fedeles verzió', priority: 'high', status: 'bought', claimed_by: 'Levi', is_secret: false, deleted_by_owner: false },
+          { id: '4', owner_name: 'Apa', title: 'Barkács bitkészlet', link: '', note: 'Mágneses fejű', priority: 'normal', status: 'reserved', claimed_by: 'Barátnőm', is_secret: false, deleted_by_owner: false },
+          { id: '5', owner_name: 'Nagymama', title: 'Meleg gyapjú pléd', link: '', note: 'Bordó vagy zöld színben', priority: 'high', status: 'available', claimed_by: null, is_secret: false, deleted_by_owner: false },
+          { id: '6', owner_name: 'Levi', title: 'Társasjáték vagy Python könyv', link: '', note: '', priority: 'high', status: 'bought', claimed_by: 'Barátnőm', is_secret: false, deleted_by_owner: false }
+        ];
+        localStorage.setItem('xmas_v3_demo_groups', JSON.stringify(demoGroups));
+        localStorage.setItem('xmas_v3_demo_users', JSON.stringify(demoUsers));
+        localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(demoWishes));
+      }
+    }
+
+    function resetDemo() {
+      localStorage.removeItem('xmas_v3_demo_groups');
+      localStorage.removeItem('xmas_v3_demo_users');
+      localStorage.removeItem('xmas_v3_demo_wishes');
+      localStorage.removeItem('xmas_v3_user');
+      location.reload();
+    }
+
+    function quickDemoLogin(name) {
+      document.getElementById('auth-username').value = name;
+      document.getElementById('auth-pin').value = '1234';
+      document.querySelector('#auth-view form').requestSubmit();
+    }
+
+    // Adatok betöltése
+    async function loadData() {
+      if (isDemoMode) {
+        initDemoData();
+        allGroups = JSON.parse(localStorage.getItem('xmas_v3_demo_groups')) || [];
+        allUsers = JSON.parse(localStorage.getItem('xmas_v3_demo_users')) || [];
+        allWishes = JSON.parse(localStorage.getItem('xmas_v3_demo_wishes')) || [];
+      } else {
+        const { data: gData } = await supabaseClient.from('family_groups').select('*');
+        const { data: uData } = await supabaseClient.from('family_users').select('*');
+        const { data: wData } = await supabaseClient.from('wishes').select('*').order('created_at', { ascending: true });
+        allGroups = gData || [];
+        allUsers = uData || [];
+        allWishes = wData || [];
+      }
+      if (currentUser) {
+        renderMyList();
+        renderBoard();
+        renderGroupsTab();
+      }
+    }
+
+    function getCurrentUserObj() {
+      return allUsers.find(u => u.username === currentUser) || { username: currentUser, groups: [] };
+    }
+
+    // Belépés / Regisztráció
+    async function handleAuth(e) {
+      e.preventDefault();
+      const usernameInput = document.getElementById('auth-username').value.trim();
+      const pinInput = document.getElementById('auth-pin').value.trim();
+      const errorBox = document.getElementById('auth-error');
+      errorBox.classList.add('hidden');
+
+      await loadData();
+      const existingUser = allUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase());
+
+      if (existingUser) {
+        if (existingUser.pin !== pinInput) {
+          errorBox.textContent = "❌ Ez a név már foglalt, és a megadott PIN kód nem egyezik!";
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        currentUser = existingUser.username;
+      } else {
+        currentUser = usernameInput;
+        const newUserObj = { username: currentUser, pin: pinInput, groups: [] };
+        if (isDemoMode) {
+          allUsers.push(newUserObj);
+          localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
+        } else {
+          await supabaseClient.from('family_users').insert([newUserObj]);
+        }
+      }
+
+      localStorage.setItem('xmas_v3_user', currentUser);
+      selectedGroupCode = 'ALL_MY_GROUPS';
+      selectedPersonFilter = 'ALL';
+      enterApp();
+    }
+
+    function enterApp() {
+      document.getElementById('auth-view').classList.add('hidden');
+      document.getElementById('app-view').classList.remove('hidden');
+      document.getElementById('user-controls').classList.remove('hidden');
+      document.getElementById('current-user-display').textContent = currentUser;
+      loadData();
+    }
+
+    function logout() {
+      localStorage.removeItem('xmas_v3_user');
+      currentUser = null;
+      document.getElementById('auth-view').classList.remove('hidden');
+      document.getElementById('app-view').classList.add('hidden');
+      document.getElementById('user-controls').classList.add('hidden');
+      document.getElementById('auth-pin').value = '';
+    }
+
+    // Fülváltás (3 fül között)
+    function switchTab(tab) {
+      const tabs = ['my-list', 'board', 'groups'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const sec = document.getElementById(`section-${t}`);
+        if (t === tab) {
+          btn.className = "py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition bg-red-600 text-white shadow";
+          sec.classList.remove('hidden');
+        } else {
+          btn.className = "py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white";
+          sec.classList.add('hidden');
+        }
+      });
+      loadData();
+    }
+
+    // ================= CSOPORT KEZELÉS LOGIKA =================
+    async function createNewGroup(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-group-name').value.trim();
+      const code = document.getElementById('new-group-code').value.trim().toUpperCase();
+
+      if (allGroups.some(g => g.code.toUpperCase() === code)) {
+        alert("Ez a meghívó kód már foglalt! Válassz másikat.");
+        return;
+      }
+
+      const newGroup = { name, code, created_by: currentUser };
+      if (isDemoMode) {
+        newGroup.id = Date.now().toString();
+        allGroups.push(newGroup);
+        localStorage.setItem('xmas_v3_demo_groups', JSON.stringify(allGroups));
+      } else {
+        await supabaseClient.from('family_groups').insert([newGroup]);
+      }
+
+      document.getElementById('new-group-name').value = '';
+      document.getElementById('new-group-code').value = '';
+      await addUserToGroupCode(code);
+    }
+
+    async function joinGroupByCode(e) {
+      e.preventDefault();
+      const code = document.getElementById('join-group-code').value.trim().toUpperCase();
+      const msgBox = document.getElementById('join-group-msg');
+      msgBox.classList.remove('hidden');
+
+      const foundGroup = allGroups.find(g => g.code.toUpperCase() === code);
+      if (!foundGroup) {
+        msgBox.textContent = "❌ Nem található csoport ezzel a kóddal!";
+        msgBox.className = "text-xs mt-2 font-bold text-red-600";
+        return;
+      }
+
+      await addUserToGroupCode(foundGroup.code);
+      document.getElementById('join-group-code').value = '';
+      msgBox.textContent = `✅ Sikeresen csatlakoztál a(z) "${foundGroup.name}" csoporthoz!`;
+      msgBox.className = "text-xs mt-2 font-bold text-emerald-700";
+    }
+
+    async function addUserToGroupCode(code) {
+      const userObj = getCurrentUserObj();
+      const currentGroups = userObj.groups || [];
+      if (!currentGroups.includes(code)) {
+        currentGroups.push(code);
+        if (isDemoMode) {
+          userObj.groups = currentGroups;
+          localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
+        } else {
+          await supabaseClient.from('family_users').update({ groups: currentGroups }).eq('username', currentUser);
+        }
+      }
+      await loadData();
+    }
+
+    async function leaveGroup(code) {
+      const userObj = getCurrentUserObj();
+      const updatedGroups = (userObj.groups || []).filter(c => c !== code);
+      if (isDemoMode) {
+        userObj.groups = updatedGroups;
+        localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
+      } else {
+        await supabaseClient.from('family_users').update({ groups: updatedGroups }).eq('username', currentUser);
+      }
+      if (selectedGroupCode === code) selectedGroupCode = 'ALL_MY_GROUPS';
+      await loadData();
+    }
+
+    function renderGroupsTab() {
+      const container = document.getElementById('my-groups-container');
+      const userObj = getCurrentUserObj();
+      const myGroupCodes = userObj.groups || [];
+
+      if (myGroupCodes.length === 0) {
+        container.innerHTML = `
+          <div class="sm:col-span-2 bg-white p-8 rounded-2xl border-2 border-dashed border-emerald-800/20 text-center text-slate-500 text-sm">
+            Még egyetlen csoportnak sem vagy tagja! Csatlakozz fent egy kóddal (Demo módban pl. <b>SZUK2026</b> vagy <b>NAGY2026</b>), vagy hozz létre egy újat!
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = myGroupCodes.map(code => {
+        const grp = allGroups.find(g => g.code === code) || { name: code, code };
+        const members = allUsers.filter(u => (u.groups || []).includes(code)).map(u => u.username);
+
+        return `
+          <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-800/15 flex flex-col justify-between gap-4">
+            <div>
+              <div class="flex justify-between items-start gap-2">
+                <h4 class="font-extrabold text-emerald-950 text-base">${escapeHtml(grp.name)}</h4>
+                <span class="text-xs font-extrabold bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg border border-emerald-300">
+                  Kód: ${escapeHtml(grp.code)}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-2 font-semibold">👥 Tagok (${members.length} fő):</p>
+              <div class="flex flex-wrap gap-1.5 mt-1.5">
+                ${members.map(m => `
+                  <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${m === currentUser ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700'}">
+                    ${escapeHtml(m)}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+              <button onclick="openGroupOnBoard('${escapeHtml(grp.code)}')" class="text-xs font-bold text-emerald-700 hover:underline">
+                🎄 Listák megnyitása a Táblákon &rarr;
+              </button>
+              <button onclick="leaveGroup('${escapeHtml(grp.code)}')" class="text-xs text-slate-400 hover:text-red-600 font-semibold">
+                Kilépés a csoportból
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openGroupOnBoard(code) {
+      selectedGroupCode = code;
+      selectedPersonFilter = 'ALL';
+      switchTab('board');
+    }
+
+    // ================= KÍVÁNSÁGOK LOGIKA =================
+    async function addWish(e, isSecret) {
+      e.preventDefault();
+      let newItem = {};
+
+      if (!isSecret) {
+        newItem = {
+          owner_name: currentUser,
+          title: document.getElementById('wish-title').value.trim(),
+          link: document.getElementById('wish-link').value.trim(),
+          note: document.getElementById('wish-note').value.trim(),
+          priority: document.getElementById('wish-priority').value,
+          status: 'available',
+          claimed_by: null,
+          is_secret: false,
+          deleted_by_owner: false
+        };
+        document.getElementById('wish-title').value = '';
+        document.getElementById('wish-link').value = '';
+        document.getElementById('wish-note').value = '';
+      } else {
+        newItem = {
+          owner_name: document.getElementById('secret-target-user').value,
+          title: document.getElementById('secret-title').value.trim(),
+          link: '',
+          note: document.getElementById('secret-note').value.trim(),
+          priority: 'normal',
+          status: 'bought',
+          claimed_by: currentUser,
+          is_secret: true,
+          deleted_by_owner: false
+        };
+        closeSecretModal();
+      }
+
+      if (isDemoMode) {
+        newItem.id = Date.now().toString();
+        allWishes.push(newItem);
+        localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
+      } else {
+        await supabaseClient.from('wishes').insert([newItem]);
+      }
+      await loadData();
+    }
+
+    async function deleteMyWish(id) {
+      const wish = allWishes.find(w => String(w.id) === String(id));
+      if (!wish) return;
+
+      if (wish.status === 'available') {
+        if (isDemoMode) {
+          allWishes = allWishes.filter(w => String(w.id) !== String(id));
+          localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
+        } else {
+          await supabaseClient.from('wishes').delete().eq('id', id);
+        }
+      } else {
+        if (isDemoMode) {
+          wish.deleted_by_owner = true;
+          localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
+        } else {
+          await supabaseClient.from('wishes').update({ deleted_by_owner: true }).eq('id', id);
+        }
+      }
+      await loadData();
+    }
+
+    async function updateStatus(id, newStatus) {
+      const wish = allWishes.find(w => String(w.id) === String(id));
+      if (!wish) return;
+
+      const claimedBy = newStatus === 'available' ? null : currentUser;
+
+      if (wish.is_secret && newStatus === 'available') {
+        if (isDemoMode) {
+          allWishes = allWishes.filter(w => String(w.id) !== String(id));
+          localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
+        } else {
+          await supabaseClient.from('wishes').delete().eq('id', id);
+        }
+        await loadData();
+        return;
+      }
+
+      if (isDemoMode) {
+        wish.status = newStatus;
+        wish.claimed_by = claimedBy;
+        localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
+      } else {
+        await supabaseClient.from('wishes').update({ status: newStatus, claimed_by: claimedBy }).eq('id', id);
+      }
+      await loadData();
+    }
+
+    function getPriorityBadge(priority) {
+      if (priority === 'high') return '<span class="text-xs bg-red-100 text-red-800 border border-red-200 font-bold px-2 py-0.5 rounded-md">❤️ Nagyon vágyik rá</span>';
+      if (priority === 'low') return '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">💡 Tipp</span>';
+      return '<span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold px-2 py-0.5 rounded-md">🌲 Örülne neki</span>';
+    }
+
+    // 1. RENDER: Saját Lista
+    function renderMyList() {
+      const container = document.getElementById('my-wishes-container');
+      const myItems = allWishes.filter(w => w.owner_name === currentUser && !w.is_secret && !w.deleted_by_owner);
+
+      if (myItems.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border-2 border-dashed border-emerald-800/20 text-center text-slate-500 text-sm">Még üres a kívánságlistád. Írj fel párat fent, hogy a családnak könnyű dolga legyen! 🎄</div>`;
+        return;
+      }
+
+      container.innerHTML = myItems.map(item => `
+        <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-900/10 flex items-start justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-bold text-slate-900">${escapeHtml(item.title)}</span>
+              ${getPriorityBadge(item.priority)}
+            </div>
+            ${item.note ? `<p class="text-xs text-slate-600">💬 ${escapeHtml(item.note)}</p>` : ''}
+            ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:underline mt-1">🔗 Megnyitás a boltban &rarr;</a>` : ''}
+          </div>
+          <button onclick="deleteMyWish('${item.id}')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-xl hover:bg-red-50 transition text-xs font-bold shrink-0">
+            🗑️ Törlés
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // 2. RENDER: Családi Táblák (Csoport alapú szűréssel!)
+    function renderBoard() {
+      const groupSelector = document.getElementById('board-group-selector');
+      const filtersContainer = document.getElementById('family-filters');
+      const boardContainer = document.getElementById('board-container');
+
+      const userObj = getCurrentUserObj();
+      const myGroupCodes = userObj.groups || [];
+
+      if (myGroupCodes.length === 0) {
+        groupSelector.innerHTML = '';
+        filtersContainer.innerHTML = '';
+        boardContainer.innerHTML = `
+          <div class="bg-white p-8 rounded-2xl border-2 border-red-200 text-center space-y-3">
+            <div class="text-3xl">👨‍👩‍👧‍👦</div>
+            <h4 class="font-extrabold text-emerald-950 text-base">Még nem vagy tagja egyetlen ajándékozó csoportnak sem!</h4>
+            <p class="text-xs text-slate-600 max-w-md mx-auto">Hogy csak azokat lásd a Táblákon, akikkel közösen ajándékoztok, lépj be egy csoportba vagy hozz létre egyet a Csoportjaim fülön.</p>
+            <button onclick="switchTab('groups')" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition">
+              Ugrás a Csoportjaimhoz &rarr;
+            </button>
+          </div>`;
+        return;
+      }
+
+      // Csoport választó gombok renderelése
+      groupSelector.innerHTML = `
+        <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3.5 py-2 rounded-xl text-xs font-extrabold shrink-0 transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+          🌟 Minden csoportom (${myGroupCodes.length})
+        </button>
+        ${myGroupCodes.map(code => {
+          const grp = allGroups.find(g => g.code === code) || { name: code, code };
+          const active = selectedGroupCode === code;
+          return `
+            <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-3.5 py-2 rounded-xl text-xs font-extrabold shrink-0 transition ${active ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+              ${escapeHtml(grp.name)}
+            </button>
+          `;
+        }).join('')}
+      `;
+
+      // Kik azok a felhasználók, akik benne vannak a kiválasztott csoport(ok)ban? (Saját magunkat kizárva!)
+      const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
+      const visibleUsers = allUsers
+        .filter(u => u.username !== currentUser && (u.groups || []).some(code => activeGroupCodes.includes(code)))
+        .map(u => u.username);
+
+      // Személy szűrő gombok
+      filtersContainer.innerHTML = `
+        <button onclick="setPersonFilter('ALL')" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition ${selectedPersonFilter === 'ALL' ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
+          Összes tag a körben (${visibleUsers.length})
+        </button>
+        ${visibleUsers.map(name => `
+          <button onclick="setPersonFilter('${escapeHtml(name)}')" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition ${selectedPersonFilter === name ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
+            🦌 ${escapeHtml(name)}
+          </button>
+        `).join('')}
+      `;
+
+      const usersToDisplay = selectedPersonFilter === 'ALL' ? visibleUsers : visibleUsers.filter(u => u === selectedPersonFilter);
+
+      if (usersToDisplay.length === 0) {
+        boardContainer.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 text-sm">Ebben a csoportban még nincs más családtag. Küldd el nekik a csoport meghívó kódját!</div>`;
+        return;
+      }
+
+      boardContainer.innerHTML = usersToDisplay.map(person => {
+        const personObj = allUsers.find(u => u.username === person);
+        const sharedGroups = (personObj?.groups || [])
+          .filter(c => myGroupCodes.includes(c))
+          .map(c => (allGroups.find(g => g.code === c)?.name || c));
+
+        const personWishes = allWishes.filter(w => w.owner_name === person);
+
+        return `
+          <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-900/15 overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-900 to-green-800 text-white px-5 py-3.5 flex flex-wrap justify-between items-center gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-red-600 border border-red-400 text-white inline-flex items-center justify-center text-sm font-extrabold shadow-sm">${person.charAt(0).toUpperCase()}</span>
+                <div>
+                  <h4 class="font-extrabold text-white leading-tight">${escapeHtml(person)} kívánságtáblája</h4>
+                  <p class="text-[11px] text-emerald-200">Közös csoport: ${sharedGroups.map(escapeHtml).join(', ')}</p>
+                </div>
+              </div>
+              <span class="text-xs bg-emerald-950/60 text-emerald-200 px-3 py-1 rounded-full font-bold">${personWishes.length} kívánság</span>
+            </div>
+
+            <div class="p-4 space-y-3">
+              ${personWishes.length === 0 ? `<p class="text-xs text-slate-400 italic py-2">${escapeHtml(person)} még nem írt fel kívánságot.</p>` : ''}
+              ${personWishes.map(item => renderBoardItem(item)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBoardItem(item) {
+      const isBought = item.status === 'bought';
+      const isReserved = item.status === 'reserved';
+      const isMine = item.claimed_by === currentUser;
+
+      let cardStyle = "bg-white border-slate-200";
+      let statusBadge = "";
+
+      if (isBought) {
+        cardStyle = "bg-emerald-100/90 border-2 border-emerald-500 shadow-sm";
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${escapeHtml(item.claimed_by)} megvette!</span>`;
+      } else if (isReserved) {
+        cardStyle = "bg-amber-50/90 border-2 border-amber-400";
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${escapeHtml(item.claimed_by)} lefoglalta</span>`;
+      }
+
+      return `
+        <div class="p-4 rounded-xl border ${cardStyle} transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              ${item.is_secret ? `<span class="text-xs bg-red-700 text-white font-bold px-2 py-0.5 rounded-md">🕵️ Titkos meglepetés</span>` : getPriorityBadge(item.priority)}
+              <span class="font-extrabold text-slate-900 ${isBought ? 'line-through decoration-emerald-700/60 text-emerald-950' : ''}">${escapeHtml(item.title)}</span>
+              ${statusBadge}
+            </div>
+            ${item.deleted_by_owner ? `<p class="text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded inline-block">⚠️ Figyelem: ${escapeHtml(item.owner_name)} időközben törölte ezt a listájáról!</p>` : ''}
+            ${item.note ? `<p class="text-xs text-slate-700">💬 ${escapeHtml(item.note)}</p>` : ''}
+            ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="inline-flex items-center gap-1 text-xs font-extrabold text-red-600 hover:underline pt-0.5">🔗 Bolti link megnyitása &rarr;</a>` : ''}
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            ${item.status === 'available' ? `
+              <button onclick="updateStatus('${item.id}', 'reserved')" class="text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl transition">
+                🛒 Lefoglalom
+              </button>
+              <button onclick="updateStatus('${item.id}', 'bought')" class="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-3.5 py-2 rounded-xl shadow transition">
+                ✅ Megvettem
+              </button>
+            ` : ''}
+
+            ${isReserved && isMine ? `
+              <button onclick="updateStatus('${item.id}', 'bought')" class="text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-2 rounded-xl shadow transition">
+                ✅ Megvettem!
+              </button>
+              <button onclick="updateStatus('${item.id}', 'available')" class="text-xs font-semibold text-slate-600 hover:text-slate-900 px-2.5 py-2 rounded-xl border border-slate-300 bg-white transition">
+                Mégse
+              </button>
+            ` : ''}
+
+            ${isBought && isMine ? `
+              <button onclick="updateStatus('${item.id}', 'available')" class="text-xs font-bold text-red-700 hover:bg-red-50 px-2.5 py-1.5 rounded-xl border border-red-300 bg-white transition">
+                ✖ Pipálás levétele
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectBoardGroup(code) {
+      selectedGroupCode = code;
+      selectedPersonFilter = 'ALL';
+      renderBoard();
+    }
+
+    function setPersonFilter(name) {
+      selectedPersonFilter = name;
+      renderBoard();
+    }
+
+    // Titkos ajándék Modal (Csak a közös csoportban lévőknek!)
+    function openSecretModal() {
+      const select = document.getElementById('secret-target-user');
+      const myGroupCodes = getCurrentUserObj().groups || [];
+      const visibleUsers = allUsers
+        .filter(u => u.username !== currentUser && (u.groups || []).some(c => myGroupCodes.includes(c)))
+        .map(u => u.username);
+
+      if (visibleUsers.length === 0) {
+        alert("Először lépj be egy csoportba, ahol vannak más családtagok is!");
+        return;
+      }
+      select.innerHTML = visibleUsers.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+      document.getElementById('secret-title').value = '';
+      document.getElementById('secret-note').value = '';
+      document.getElementById('secret-modal').classList.remove('hidden');
+    }
+
+    function closeSecretModal() {
+      document.getElementById('secret-modal').classList.add('hidden');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    if (currentUser) {
+      enterApp();
+    }
+  </script>
+</body>
+</html>
