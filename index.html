@@ -170,6 +170,11 @@
 
     <!-- ================= 2. FŐ ALKALMAZÁS NÉZET ================= -->
     <div id="app-view" class="hidden fade-in">
+      <!-- Visszaszámláló -->
+      <div class="bg-white/70 backdrop-blur-sm border-2 border-red-600/20 text-center py-2.5 px-4 rounded-2xl shadow-sm mb-4 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-sm sm:text-base text-emerald-950 font-extrabold">
+        <span>🎁 Ajándékozásig hátralévő idő:</span>
+        <span id="countdown-timer" class="text-red-600 tracking-wide font-bold">Számolás...</span>
+      </div>
       
       <!-- Fő Navigációs Fülek (Piros - Zöld Karácsonyi stílus) -->
       <div class="grid grid-cols-3 bg-emerald-950/90 p-1.5 rounded-2xl mb-6 shadow-md border border-emerald-800">
@@ -961,7 +966,35 @@
       if (!str) return '';
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
+function updateCountdown() {
+      const now = new Date().getTime();
+      const currentYear = new Date().getFullYear();
+      // Visszaszámlálás Szentestére (Dec 24. 16:00)
+      const targetDate = new Date(currentYear, 11, 24, 16, 0, 0).getTime(); 
 
+      const distance = targetDate - now;
+      const timerEl = document.getElementById("countdown-timer");
+      
+      if (!timerEl) return;
+
+      if (distance < 0) {
+        timerEl.innerHTML = "Itt a Karácsony! Boldog ünnepeket! 🎄";
+        timerEl.classList.remove('text-red-600');
+        timerEl.classList.add('text-emerald-600');
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      timerEl.innerHTML = `${days} nap, ${hours} óra, ${minutes} perc, ${seconds} másodperc`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    
     if (currentUser) {
       enterApp();
     }
