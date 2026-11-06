@@ -747,9 +747,26 @@
     </div>
   </div>
 
+  <!-- ================= FA / CSOPORT VÁLASZTÓ MODAL (ÖSSZESÍTETT NÉZETHEZ) ================= -->
+  <div id="tree-picker-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-600 fade-in">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-extrabold text-lg text-emerald-950">🎄 Melyik csoport fája alá szánod?</h3>
+        <button onclick="closeTreePickerModal()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4">
+        Mivel most az összesített nézetben vagy, válaszd ki, melyik karácsonyfa alá kerüljön az ajándék! A többi csoport listájából automatikusan eltűnik majd, hogy más ne vegye meg.
+      </p>
+      <div id="tree-picker-options" class="space-y-2 mb-4"></div>
+      <div class="flex justify-end">
+        <button type="button" onclick="closeTreePickerModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Mégse</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= JAVASCRIPT LOGIKA ================= -->
   <script>
-    // 1. Fektetett Candy Cane Betöltő Animáció
+    // 1. Fektetett Candy Cane Betöltő Animáció Indítása
     function runCandyCaneLoader() {
       const overlay = document.getElementById('loader-overlay');
       const percentEl = document.getElementById('loader-percent');
@@ -777,21 +794,44 @@
     } else {
       document.getElementById('mode-badge').classList.remove('hidden');
       document.getElementById('reset-demo-btn').classList.remove('hidden');
+      document.getElementById('demo-login-hint').classList.remove('hidden');
     }
 
     let currentUser = localStorage.getItem('xmas_v3_user') || null;
     let selectedGroupCode = 'ALL_MY_GROUPS';
     let selectedPersonFilter = 'ALL';
-    let isRoomView = false;
     let allUsers = [];
     let allGroups = [];
     let allWishes = [];
 
+    // Függőben lévő művelet, ha az összesített nézetben választ csoportot a felhasználó
+    let pendingTreeAction = null;
+
+    // Demo alapadatok
     function initDemoData() {
       if (!localStorage.getItem('xmas_v3_demo_users')) {
-        localStorage.setItem('xmas_v3_demo_groups', JSON.stringify([]));
-        localStorage.setItem('xmas_v3_demo_users', JSON.stringify([]));
-        localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify([]));
+        const demoGroups = [
+          { id: 'g1', name: '🏠 Szűk Családi Kör', code: 'SZUK2026', created_by: 'Levi' },
+          { id: 'g2', name: '🎄 Nagycsaládi Karácsony', code: 'NAGY2026', created_by: 'Anya' }
+        ];
+        const demoUsers = [
+          { username: 'Levi', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Barátnőm', pin: '1234', groups: ['SZUK2026'] },
+          { username: 'Anya', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Apa', pin: '1234', groups: ['SZUK2026', 'NAGY2026'] },
+          { username: 'Nagymama', pin: '1234', groups: ['NAGY2026'] }
+        ];
+        const demoWishes = [
+          { id: '1', owner_name: 'Barátnőm', title: 'Macskás kaparófa cicának', link: 'https://google.com', note: 'Bézs színű', priority: 'high', status: 'available', claimed_by: null, claimed_group: null, is_secret: false, deleted_by_owner: false },
+          { id: '2', owner_name: 'Barátnőm', title: 'Fahéjas illatgyertya szett', link: '', note: '', priority: 'normal', status: 'bought', claimed_by: 'Anya', claimed_group: 'SZUK2026', is_secret: false, deleted_by_owner: false },
+          { id: '3', owner_name: 'Anya', title: 'Jénai hőálló üvegtál szett', link: 'https://google.com', note: 'Fedeles verzió', priority: 'high', status: 'bought', claimed_by: 'Levi', claimed_group: 'SZUK2026', is_secret: false, deleted_by_owner: false },
+          { id: '4', owner_name: 'Apa', title: 'Barkács bitkészlet', link: '', note: 'Mágneses fejű', priority: 'normal', status: 'reserved', claimed_by: 'Barátnőm', claimed_group: 'SZUK2026', is_secret: false, deleted_by_owner: false },
+          { id: '5', owner_name: 'Nagymama', title: 'Meleg gyapjú pléd', link: '', note: 'Bordó vagy zöld színben', priority: 'high', status: 'available', claimed_by: null, claimed_group: null, is_secret: false, deleted_by_owner: false },
+          { id: '6', owner_name: 'Levi', title: 'Társasjáték vagy Python könyv', link: '', note: '', priority: 'high', status: 'bought', claimed_by: 'Barátnőm', claimed_group: 'SZUK2026', is_secret: false, deleted_by_owner: false }
+        ];
+        localStorage.setItem('xmas_v3_demo_groups', JSON.stringify(demoGroups));
+        localStorage.setItem('xmas_v3_demo_users', JSON.stringify(demoUsers));
+        localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(demoWishes));
       }
     }
 
@@ -803,6 +843,13 @@
       location.reload();
     }
 
+    function quickDemoLogin(name) {
+      document.getElementById('auth-username').value = name;
+      document.getElementById('auth-pin').value = '1234';
+      document.querySelector('#auth-view form').requestSubmit();
+    }
+
+    // Adatok betöltése
     async function loadData() {
       if (isDemoMode) {
         initDemoData();
@@ -826,6 +873,12 @@
 
     function getCurrentUserObj() {
       return allUsers.find(u => u.username === currentUser) || { username: currentUser, groups: [] };
+    }
+
+    function getGroupName(code) {
+      if (!code) return '';
+      const grp = allGroups.find(g => g.code === code);
+      return grp ? grp.name : code;
     }
 
     // Belépés / Regisztráció
@@ -880,124 +933,22 @@
       document.getElementById('auth-pin').value = '';
     }
 
+    // Fülváltás (3 fül között)
     function switchTab(tab) {
       const tabs = ['my-list', 'board', 'groups'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         const sec = document.getElementById(`section-${t}`);
         if (t === tab) {
-          btn.className = "py-2.5 px-1.5 sm:px-2 text-xs sm:text-sm font-bold rounded-xl transition bg-red-600 text-white shadow";
+          btn.className = "py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition bg-red-600 text-white shadow";
           sec.classList.remove('hidden');
         } else {
-          btn.className = "py-2.5 px-1.5 sm:px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white";
+          btn.className = "py-2.5 px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white";
           sec.classList.add('hidden');
         }
       });
       loadData();
     }
-
-    // ================= 3D FLIP NÉZETVÁLTÁS (TÁBLÁK <-> KARÁCSONYI SZOBA) =================
-    function toggleRoomFlip() {
-      isRoomView = !isRoomView;
-      const flipCard = document.getElementById('board-flip-card');
-      const toggleBtn = document.getElementById('flip-toggle-btn');
-
-      if (isRoomView) {
-        flipCard.classList.add('is-flipped');
-        toggleBtn.innerHTML = '↩ Vissza a lista nézetre';
-        toggleBtn.className = 'w-full sm:w-auto justify-center bg-gradient-to-r from-emerald-800 to-green-900 hover:from-emerald-900 hover:to-green-950 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-emerald-500/80 transition transform active:scale-95 flex items-center gap-2';
-        renderBoard();
-      } else {
-        flipCard.classList.remove('is-flipped');
-        toggleBtn.innerHTML = '🎁 Nézzük hány ajándék van a fa alatt?';
-        toggleBtn.className = 'w-full sm:w-auto justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-red-400/80 transition transform active:scale-95 flex items-center gap-2';
-      }
-    }
-
-    // ================= VEKTOROS AJÁNDÉKDOBOZOK A FA ALATT =================
-    const PRESENT_SLOTS = [
-      { x: 52,  y: 400, w: 48, h: 52, fill: 'url(#gift-stripes-green)', ribbon: '#dc2626' },
-      { x: 108, y: 416, w: 62, h: 42, fill: '#dc2626', ribbon: '#facc15' },
-      { x: 180, y: 422, w: 54, h: 36, fill: '#fde047', ribbon: '#dc2626' },
-      { x: 240, y: 406, w: 48, h: 48, fill: '#2563eb', ribbon: '#ef4444' },
-      { x: 790, y: 392, w: 46, h: 48, fill: '#15803d', ribbon: '#dc2626' },
-      { x: 745, y: 418, w: 42, h: 36, fill: '#0d9488', ribbon: '#ef4444' },
-      { x: 755, y: 382, w: 36, h: 36, fill: '#eab308', ribbon: '#dc2626' },
-      { x: 78,  y: 376, w: 44, h: 40, fill: '#9333ea', ribbon: '#facc15' },
-      { x: 145, y: 384, w: 46, h: 38, fill: 'url(#gift-stripes-red)', ribbon: '#fde047' },
-      { x: 205, y: 382, w: 44, h: 40, fill: '#f97316', ribbon: '#fef08a' },
-      { x: 22,  y: 424, w: 44, h: 38, fill: '#dc2626', ribbon: '#22c55e' },
-      { x: 278, y: 424, w: 46, h: 38, fill: '#eab308', ribbon: '#15803d' },
-      { x: 822, y: 418, w: 48, h: 40, fill: '#dc2626', ribbon: '#facc15' },
-      { x: 138, y: 438, w: 50, h: 34, fill: '#0284c7', ribbon: '#fde047' }
-    ];
-
-    function updateRoomPresents(boughtCount) {
-      const layer = document.getElementById('svg-presents-layer');
-      if (!layer) return;
-      layer.innerHTML = '';
-
-      if (boughtCount <= 0) return;
-
-      const palette = ['#dc2626', '#16a34a', '#2563eb', '#eab308', '#9333ea', '#f97316', 'url(#gift-stripes-green)', 'url(#gift-stripes-red)'];
-      const ribbons = ['#facc15', '#dc2626', '#fef08a', '#ffffff'];
-
-      for (let i = 0; i < boughtCount; i++) {
-        let slot;
-        if (i < PRESENT_SLOTS.length) {
-          slot = PRESENT_SLOTS[i];
-        } else {
-          const extraIdx = i - PRESENT_SLOTS.length;
-          slot = {
-            x: 40 + ((extraIdx * 53) % 250),
-            y: 430 + ((extraIdx * 11) % 30),
-            w: 42,
-            h: 36,
-            fill: palette[i % palette.length],
-            ribbon: ribbons[i % ribbons.length]
-          };
-        }
-
-        const { x, y, w, h, fill, ribbon } = slot;
-        const delay = (i * 0.1).toFixed(2);
-        const lidH = 7;
-
-        const presentMarkup = `
-          <g class="present-box-anim" style="animation-delay: ${delay}s">
-            <ellipse cx="${x + w/2}" cy="${y + h + 2}" rx="${w/2 + 3}" ry="4" fill="rgba(0,0,0,0.28)"/>
-            <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="#2d1609" stroke-width="1.5"/>
-            <rect x="${x + w/2 - 4}" y="${y}" width="8" height="${h}" fill="${ribbon}"/>
-            <rect x="${x}" y="${y + h/2 - 3}" width="${w}" height="6" fill="${ribbon}"/>
-            <rect x="${x - 2}" y="${y - 2}" width="${w + 4}" height="${lidH}" rx="1.5" fill="${fill}" stroke="#2d1609" stroke-width="1.5"/>
-            <rect x="${x + w/2 - 4}" y="${y - 2}" width="8" height="${lidH}" fill="${ribbon}"/>
-            <path d="M ${x + w/2} ${y - 2} C ${x + w/2 - 14} ${y - 14} ${x + w/2 - 18} ${y - 1} ${x + w/2 - 2} ${y - 2} Z" fill="${ribbon}" stroke="#2d1609" stroke-width="1"/>
-            <path d="M ${x + w/2} ${y - 2} C ${x + w/2 + 14} ${y - 14} ${x + w/2 + 18} ${y - 1} ${x + w/2 + 2} ${y - 2} Z" fill="${ribbon}" stroke="#2d1609" stroke-width="1"/>
-          </g>
-        `;
-        layer.insertAdjacentHTML('beforeend', presentMarkup);
-      }
-    }
-
-    // ================= ÉGŐSOROK RANDOM CSOPORTOS VILLOGTATÁSA (1-4) =================
-    let lastLightGroup = 0;
-    function startChristmasLights() {
-      const triggerRandomGroup = () => {
-        const candidates = [1, 2, 3, 4].filter(n => n !== lastLightGroup);
-        const activeGroup = candidates[Math.floor(Math.random() * candidates.length)];
-        lastLightGroup = activeGroup;
-
-        document.querySelectorAll('.xmas-light').forEach(bulb => {
-          if (parseInt(bulb.dataset.group, 10) === activeGroup) {
-            bulb.classList.add('on');
-          } else {
-            bulb.classList.remove('on');
-          }
-        });
-      };
-      triggerRandomGroup();
-      setInterval(triggerRandomGroup, 750);
-    }
-    window.addEventListener('DOMContentLoaded', startChristmasLights);
 
     // ================= CSOPORT KEZELÉS LOGIKA =================
     async function createNewGroup(e) {
@@ -1093,7 +1044,7 @@
             <div>
               <div class="flex justify-between items-start gap-2">
                 <h4 class="font-extrabold text-emerald-950 text-base">${escapeHtml(grp.name)}</h4>
-                <span class="text-xs font-extrabold bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg border border-emerald-300 shrink-0">
+                <span class="text-xs font-extrabold bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-lg border border-emerald-300">
                   Kód: ${escapeHtml(grp.code)}
                 </span>
               </div>
@@ -1106,7 +1057,7 @@
                 `).join('')}
               </div>
             </div>
-            <div class="pt-3 border-t border-slate-100 flex justify-between items-center gap-2 flex-wrap">
+            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
               <button onclick="openGroupOnBoard('${escapeHtml(grp.code)}')" class="text-xs font-bold text-emerald-700 hover:underline">
                 🎄 Listák megnyitása a Táblákon &rarr;
               </button>
@@ -1125,41 +1076,50 @@
       switchTab('board');
     }
 
-    // ================= KÍVÁNSÁGOK LOGIKA =================
-    async function addWish(e, isSecret) {
-      e.preventDefault();
-      let newItem = {};
+    // ================= FA / CSOPORT VÁLASZTÓ MODAL LOGIKA =================
+    function openTreePickerForAction(targetOwner, onSelectCallback) {
+      const myGroups = getCurrentUserObj().groups || [];
+      const ownerObj = allUsers.find(u => u.username === targetOwner);
+      const ownerGroups = ownerObj ? (ownerObj.groups || []) : [];
 
-      if (!isSecret) {
-        newItem = {
-          owner_name: currentUser,
-          title: document.getElementById('wish-title').value.trim(),
-          link: document.getElementById('wish-link').value.trim(),
-          note: document.getElementById('wish-note').value.trim(),
-          priority: document.getElementById('wish-priority').value,
-          status: 'available',
-          claimed_by: null,
-          is_secret: false,
-          deleted_by_owner: false
-        };
-        document.getElementById('wish-title').value = '';
-        document.getElementById('wish-link').value = '';
-        document.getElementById('wish-note').value = '';
-      } else {
-        newItem = {
-          owner_name: document.getElementById('secret-target-user').value,
-          title: document.getElementById('secret-title').value.trim(),
-          link: '',
-          note: document.getElementById('secret-note').value.trim(),
-          priority: 'normal',
-          status: 'bought',
-          claimed_by: currentUser,
-          is_secret: true,
-          deleted_by_owner: false
-        };
-        closeSecretModal();
+      // Csak azokat a csoportokat ajánljuk fel, amikben mindketten benne vannak
+      const sharedCodes = myGroups.filter(c => ownerGroups.includes(c));
+      const codesToOffer = sharedCodes.length > 0 ? sharedCodes : myGroups;
+
+      pendingTreeAction = onSelectCallback;
+      const optionsContainer = document.getElementById('tree-picker-options');
+
+      optionsContainer.innerHTML = codesToOffer.map(code => {
+        const gName = getGroupName(code);
+        return `
+          <button type="button" onclick="confirmTreeSelection('${escapeHtml(code)}')" 
+            class="w-full text-left px-4 py-3.5 rounded-2xl border-2 border-emerald-800/15 hover:border-emerald-600 bg-emerald-50/50 hover:bg-emerald-100/80 transition flex items-center justify-between group">
+            <span class="font-extrabold text-emerald-950 text-sm flex items-center gap-2">
+              <span>🎄</span> ${escapeHtml(gName)}
+            </span>
+            <span class="text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition">Kiválasztás &rarr;</span>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('tree-picker-modal').classList.remove('hidden');
+    }
+
+    async function confirmTreeSelection(groupCode) {
+      const callback = pendingTreeAction;
+      closeTreePickerModal();
+      if (callback) {
+        await callback(groupCode);
       }
+    }
 
+    function closeTreePickerModal() {
+      pendingTreeAction = null;
+      document.getElementById('tree-picker-modal').classList.add('hidden');
+    }
+
+    // ================= KÍVÁNSÁGOK LOGIKA =================
+    async function saveWishToDb(newItem) {
       if (isDemoMode) {
         newItem.id = Date.now().toString();
         allWishes.push(newItem);
@@ -1168,6 +1128,57 @@
         await supabaseClient.from('wishes').insert([newItem]);
       }
       await loadData();
+    }
+
+    async function addWish(e, isSecret) {
+      e.preventDefault();
+
+      if (!isSecret) {
+        const newItem = {
+          owner_name: currentUser,
+          title: document.getElementById('wish-title').value.trim(),
+          link: document.getElementById('wish-link').value.trim(),
+          note: document.getElementById('wish-note').value.trim(),
+          priority: document.getElementById('wish-priority').value,
+          status: 'available',
+          claimed_by: null,
+          claimed_group: null,
+          is_secret: false,
+          deleted_by_owner: false
+        };
+        document.getElementById('wish-title').value = '';
+        document.getElementById('wish-link').value = '';
+        document.getElementById('wish-note').value = '';
+        await saveWishToDb(newItem);
+      } else {
+        const targetOwner = document.getElementById('secret-target-user').value;
+        const title = document.getElementById('secret-title').value.trim();
+        const note = document.getElementById('secret-note').value.trim();
+        closeSecretModal();
+
+        const createSecretItem = async (grpCode) => {
+          const newItem = {
+            owner_name: targetOwner,
+            title: title,
+            link: '',
+            note: note,
+            priority: 'normal',
+            status: 'bought',
+            claimed_by: currentUser,
+            claimed_group: grpCode,
+            is_secret: true,
+            deleted_by_owner: false
+          };
+          await saveWishToDb(newItem);
+        };
+
+        // Ha összesített nézetben van, rákérdezünk, melyik fa alá kerüljön a titkos ajándék
+        if (selectedGroupCode === 'ALL_MY_GROUPS') {
+          openTreePickerForAction(targetOwner, createSecretItem);
+        } else {
+          await createSecretItem(selectedGroupCode);
+        }
+      }
     }
 
     async function deleteMyWish(id) {
@@ -1192,11 +1203,12 @@
       await loadData();
     }
 
-    async function updateStatus(id, newStatus) {
+    async function executeStatusUpdate(id, newStatus, groupCode) {
       const wish = allWishes.find(w => String(w.id) === String(id));
       if (!wish) return;
 
       const claimedBy = newStatus === 'available' ? null : currentUser;
+      const claimedGroup = newStatus === 'available' ? null : groupCode;
 
       if (wish.is_secret && newStatus === 'available') {
         if (isDemoMode) {
@@ -1212,11 +1224,42 @@
       if (isDemoMode) {
         wish.status = newStatus;
         wish.claimed_by = claimedBy;
+        wish.claimed_group = claimedGroup;
         localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
       } else {
-        await supabaseClient.from('wishes').update({ status: newStatus, claimed_by: claimedBy }).eq('id', id);
+        await supabaseClient
+          .from('wishes')
+          .update({ status: newStatus, claimed_by: claimedBy, claimed_group: claimedGroup })
+          .eq('id', id);
       }
       await loadData();
+    }
+
+    async function updateStatus(id, newStatus) {
+      const wish = allWishes.find(w => String(w.id) === String(id));
+      if (!wish) return;
+
+      // Ha felszabadítja a tételt (Mégse / Pipálás levétele), töröljük a csoport-hozzárendelést is
+      if (newStatus === 'available') {
+        await executeStatusUpdate(id, 'available', null);
+        return;
+      }
+
+      // Ha már le volt foglalva egy konkrét csoporthoz, és most nyom rá a "Megvettem!" gombra, megtartjuk a csoportját
+      if (wish.claimed_group) {
+        await executeStatusUpdate(id, newStatus, wish.claimed_group);
+        return;
+      }
+
+      // Ha az "Összesített nézetben" (Minden csoportom) nyomott rá, megkérdezzük, melyik fa alá szánja!
+      if (selectedGroupCode === 'ALL_MY_GROUPS') {
+        openTreePickerForAction(wish.owner_name, async (chosenGroupCode) => {
+          await executeStatusUpdate(id, newStatus, chosenGroupCode);
+        });
+      } else {
+        // Ha egy konkrét csoportban áll, automatikusan annak a csoportnak a fája alá kerül
+        await executeStatusUpdate(id, newStatus, selectedGroupCode);
+      }
     }
 
     function getPriorityBadge(priority) {
@@ -1236,13 +1279,13 @@
       }
 
       container.innerHTML = myItems.map(item => `
-        <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-900/10 flex items-start justify-between gap-3">
-          <div class="space-y-1 min-w-0">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-900/10 flex items-start justify-between gap-4">
+          <div class="space-y-1">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-bold text-slate-900 break-words">${escapeHtml(item.title)}</span>
+              <span class="font-bold text-slate-900">${escapeHtml(item.title)}</span>
               ${getPriorityBadge(item.priority)}
             </div>
-            ${item.note ? `<p class="text-xs text-slate-600 break-words">💬 ${escapeHtml(item.note)}</p>` : ''}
+            ${item.note ? `<p class="text-xs text-slate-600">💬 ${escapeHtml(item.note)}</p>` : ''}
             ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:underline mt-1">🔗 Megnyitás a boltban &rarr;</a>` : ''}
           </div>
           <button onclick="deleteMyWish('${item.id}')" class="text-slate-400 hover:text-red-600 p-1.5 rounded-xl hover:bg-red-50 transition text-xs font-bold shrink-0">
@@ -1252,7 +1295,7 @@
       `).join('');
     }
 
-    // 2. RENDER: Családi Táblák + Karácsonyi Szoba Ajándékainak Frissítése
+    // 2. RENDER: Családi Táblák (Csoport-specifikus karácsonyfa szűréssel!)
     function renderBoard() {
       const groupSelector = document.getElementById('board-group-selector');
       const filtersContainer = document.getElementById('family-filters');
@@ -1273,43 +1316,37 @@
               Ugrás a Csoportjaimhoz &rarr;
             </button>
           </div>`;
-        updateRoomPresents(0);
         return;
       }
 
-      // Csoport választó gombok (többsoros tördeléssel mobilon)
+      // Csoport választó gombok renderelése
       groupSelector.innerHTML = `
-        <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+        <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3.5 py-2 rounded-xl text-xs font-extrabold shrink-0 transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
           🌟 Minden csoportom (${myGroupCodes.length})
         </button>
         ${myGroupCodes.map(code => {
           const grp = allGroups.find(g => g.code === code) || { name: code, code };
           const active = selectedGroupCode === code;
           return `
-            <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${active ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+            <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-3.5 py-2 rounded-xl text-xs font-extrabold shrink-0 transition ${active ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
               ${escapeHtml(grp.name)}
             </button>
           `;
         }).join('')}
       `;
 
-      // Aktuálisan kiválasztott csoport(ok) tagjai (saját magunkat kizárva)
       const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
       const visibleUsers = allUsers
         .filter(u => u.username !== currentUser && (u.groups || []).some(code => activeGroupCodes.includes(code)))
         .map(u => u.username);
 
-      // Megszámoljuk, hány megvett ('bought') ajándék van az éppen kiválasztott csoportban
-      const boughtInCurrentGroup = allWishes.filter(w => visibleUsers.includes(w.owner_name) && w.status === 'bought').length;
-      updateRoomPresents(boughtInCurrentGroup);
-
-      // Személy szűrő gombok (többsoros tördeléssel mobilon)
+      // Személy szűrő gombok
       filtersContainer.innerHTML = `
-        <button onclick="setPersonFilter('ALL')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedPersonFilter === 'ALL' ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
+        <button onclick="setPersonFilter('ALL')" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition ${selectedPersonFilter === 'ALL' ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
           Összes tag a körben (${visibleUsers.length})
         </button>
         ${visibleUsers.map(name => `
-          <button onclick="setPersonFilter('${escapeHtml(name)}')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedPersonFilter === name ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
+          <button onclick="setPersonFilter('${escapeHtml(name)}')" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition ${selectedPersonFilter === name ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
             🦌 ${escapeHtml(name)}
           </button>
         `).join('')}
@@ -1328,23 +1365,36 @@
           .filter(c => myGroupCodes.includes(c))
           .map(c => (allGroups.find(g => g.code === c)?.name || c));
 
-        const personWishes = allWishes.filter(w => w.owner_name === person);
+        // SZŰRÉS: Ha egy ajándékot már megvettek/lefoglaltak egy adott csoportban, akkor CSAK annak a csoportnak a fája alatt látszódik, a többiből eltűnik!
+        const personWishes = allWishes.filter(w => {
+          if (w.owner_name !== person) return false;
+          if (w.status === 'available') return true;
+          if (!w.claimed_group) return true; // Régebbi tételek biztonsági megjelenítése
+
+          if (selectedGroupCode === 'ALL_MY_GROUPS') {
+            // Összesített nézetben csak akkor látja, ha a nézelődő maga is tagja annak a csoportnak, amelyik fája alá vették
+            return myGroupCodes.includes(w.claimed_group);
+          } else {
+            // Konkrét csoport nézetben CSAK az adott csoport fája alá vett ajándék látszik
+            return w.claimed_group === selectedGroupCode;
+          }
+        });
 
         return `
-          <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-900/15 overflow-hidden w-full">
-            <div class="bg-gradient-to-r from-emerald-900 to-green-800 text-white px-4 sm:px-5 py-3.5 flex flex-wrap justify-between items-center gap-2">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-8 h-8 shrink-0 rounded-xl bg-red-600 border border-red-400 text-white inline-flex items-center justify-center text-sm font-extrabold shadow-sm">${person.charAt(0).toUpperCase()}</span>
-                <div class="min-w-0">
-                  <h4 class="font-extrabold text-white leading-tight truncate">${escapeHtml(person)} kívánságtáblája</h4>
-                  <p class="text-[11px] text-emerald-200 truncate">Közös csoport: ${sharedGroups.map(escapeHtml).join(', ')}</p>
+          <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-900/15 overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-900 to-green-800 text-white px-5 py-3.5 flex flex-wrap justify-between items-center gap-2">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-red-600 border border-red-400 text-white inline-flex items-center justify-center text-sm font-extrabold shadow-sm">${person.charAt(0).toUpperCase()}</span>
+                <div>
+                  <h4 class="font-extrabold text-white leading-tight">${escapeHtml(person)} kívánságtáblája</h4>
+                  <p class="text-[11px] text-emerald-200">Közös csoport: ${sharedGroups.map(escapeHtml).join(', ')}</p>
                 </div>
               </div>
-              <span class="text-xs bg-emerald-950/60 text-emerald-200 px-3 py-1 rounded-full font-bold shrink-0">${personWishes.length} kívánság</span>
+              <span class="text-xs bg-emerald-950/60 text-emerald-200 px-3 py-1 rounded-full font-bold">${personWishes.length} kívánság</span>
             </div>
 
-            <div class="p-3.5 sm:p-4 space-y-3">
-              ${personWishes.length === 0 ? `<p class="text-xs text-slate-400 italic py-2">${escapeHtml(person)} még nem írt fel kívánságot.</p>` : ''}
+            <div class="p-4 space-y-3">
+              ${personWishes.length === 0 ? `<p class="text-xs text-slate-400 italic py-2">${escapeHtml(person)} listáján jelenleg nincs szabad kívánság ebben a csoportban.</p>` : ''}
               ${personWishes.map(item => renderBoardItem(item)).join('')}
             </div>
           </div>
@@ -1359,29 +1409,30 @@
 
       let cardStyle = "bg-white border-slate-200";
       let statusBadge = "";
+      const treeLabel = item.claimed_group ? ` • 🎄 ${escapeHtml(getGroupName(item.claimed_group))}` : '';
 
       if (isBought) {
         cardStyle = "bg-emerald-100/90 border-2 border-emerald-500 shadow-sm";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${escapeHtml(item.claimed_by)} megvette!</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${escapeHtml(item.claimed_by)} megvette!${treeLabel}</span>`;
       } else if (isReserved) {
         cardStyle = "bg-amber-50/90 border-2 border-amber-400";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${escapeHtml(item.claimed_by)} lefoglalta</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${escapeHtml(item.claimed_by)} lefoglalta${treeLabel}</span>`;
       }
 
       return `
-        <div class="p-3.5 sm:p-4 rounded-xl border ${cardStyle} transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-1 min-w-0">
+        <div class="p-4 rounded-xl border ${cardStyle} transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1">
             <div class="flex items-center gap-2 flex-wrap">
               ${item.is_secret ? `<span class="text-xs bg-red-700 text-white font-bold px-2 py-0.5 rounded-md">🕵️ Titkos meglepetés</span>` : getPriorityBadge(item.priority)}
-              <span class="font-extrabold text-slate-900 break-words ${isBought ? 'line-through decoration-emerald-700/60 text-emerald-950' : ''}">${escapeHtml(item.title)}</span>
+              <span class="font-extrabold text-slate-900 ${isBought ? 'line-through decoration-emerald-700/60 text-emerald-950' : ''}">${escapeHtml(item.title)}</span>
               ${statusBadge}
             </div>
             ${item.deleted_by_owner ? `<p class="text-xs font-bold text-red-700 bg-red-100 px-2 py-1 rounded inline-block">⚠️ Figyelem: ${escapeHtml(item.owner_name)} időközben törölte ezt a listájáról!</p>` : ''}
-            ${item.note ? `<p class="text-xs text-slate-700 break-words">💬 ${escapeHtml(item.note)}</p>` : ''}
+            ${item.note ? `<p class="text-xs text-slate-700">💬 ${escapeHtml(item.note)}</p>` : ''}
             ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="inline-flex items-center gap-1 text-xs font-extrabold text-red-600 hover:underline pt-0.5">🔗 Bolti link megnyitása &rarr;</a>` : ''}
           </div>
 
-          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <div class="flex items-center gap-2 shrink-0">
             ${item.status === 'available' ? `
               <button onclick="updateStatus('${item.id}', 'reserved')" class="text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-xl transition">
                 🛒 Lefoglalom
@@ -1421,11 +1472,14 @@
       renderBoard();
     }
 
+    // Titkos ajándék Modal (Csak a közös csoportban lévőknek!)
     function openSecretModal() {
       const select = document.getElementById('secret-target-user');
       const myGroupCodes = getCurrentUserObj().groups || [];
+      const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
+
       const visibleUsers = allUsers
-        .filter(u => u.username !== currentUser && (u.groups || []).some(c => myGroupCodes.includes(c)))
+        .filter(u => u.username !== currentUser && (u.groups || []).some(c => activeGroupCodes.includes(c)))
         .map(u => u.username);
 
       if (visibleUsers.length === 0) {
@@ -1446,31 +1500,6 @@
       if (!str) return '';
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
-
-    // ================= VISSZASZÁMLÁLÓ LOGIKA =================
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const currentYear = new Date().getFullYear();
-      const targetDate = new Date(currentYear, 11, 24, 16, 0, 0).getTime();
-
-      const distance = targetDate - now;
-      const timerEl = document.getElementById("countdown-timer");
-      if (!timerEl) return;
-
-      if (distance < 0) {
-        timerEl.innerHTML = "Itt a Karácsony! Boldog ünnepeket! 🎄";
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      timerEl.innerHTML = `${days} nap, ${hours} óra, ${minutes} perc, ${seconds} másodperc`;
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
 
     if (currentUser) {
       enterApp();
