@@ -764,9 +764,37 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIKA (VILLÁMGYORS VERZIÓ) ================= -->
+  <!-- ================= KARÁCSONYFA MODAL (RAJZOLT FA ALATTI AJÁNDÉSOK) ================= -->
+  <div id="tree-modal" class="fixed inset-0 bg-emerald-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 fade-in">
+    <div class="bg-gradient-to-b from-emerald-900 to-green-950 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border-4 border-amber-400 text-white relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeTreeModal()" class="absolute top-4 right-4 text-white/70 hover:text-white text-3xl font-bold">&times;</button>
+      
+      <div class="text-center mb-6">
+        <span class="text-4xl">🎄</span>
+        <h3 id="tree-modal-title" class="text-2xl font-extrabold text-amber-300 mt-2">Karácsonyfa alatti ajándékok</h3>
+        <p class="text-xs text-emerald-200 mt-1">Itt láthatod vizuálisan, hogy miket gyűjtöttek össze eddig a fa alá ebben a csoportban!</p>
+      </div>
+
+      <!-- Rajzolt Karácsonyfa Illusztráció és Dobozok -->
+      <div class="bg-emerald-950/60 border-2 border-emerald-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[280px] relative overflow-hidden shadow-inner">
+        <!-- Csillag -->
+        <div class="text-3xl animate-pulse mb-1">⭐</div>
+        <!-- Fa rétegek SVG -->
+        <svg viewBox="0 0 200 160" class="w-48 h-36 drop-shadow-lg">
+          <polygon points="100,5 30,60 170,60" fill="#15803d" />
+          <polygon points="100,30 40,95 160,95" fill="#16a34a" />
+          <polygon points="100,65 20,135 180,135" fill="#22c55e" />
+          <rect x="85" y="135" width="30" height="25" fill="#78350f" rx="3" />
+        </svg>
+
+        <!-- Ajándékdobozok a fa alatt -->
+        <div id="tree-gifts-container" class="w-full mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIKA ================= -->
   <script>
-    // 1. Fektetett Candy Cane Betöltő Animáció Indítása
     function runCandyCaneLoader() {
       const overlay = document.getElementById('loader-overlay');
       const percentEl = document.getElementById('loader-percent');
@@ -786,7 +814,6 @@
     }
     window.addEventListener('DOMContentLoaded', runCandyCaneLoader);
 
-    // 2. Supabase / Demo Mód inicializálás
     const isDemoMode = !SUPABASE_URL || !SUPABASE_ANON_KEY;
     let supabaseClient = null;
     if (!isDemoMode) {
@@ -839,7 +866,6 @@
       document.querySelector('#auth-view form').requestSubmit();
     }
 
-    // Párhuzamosított, gyors adatbetöltés (Promise.all)
     async function loadData() {
       if (isDemoMode) {
         initDemoData();
@@ -924,7 +950,6 @@
       document.getElementById('auth-pin').value = '';
     }
 
-    // Azonnali fülváltás várakozás nélkül
     function switchTab(tab) {
       const tabs = ['my-list', 'board', 'groups'];
       tabs.forEach(t => {
@@ -941,10 +966,10 @@
       renderMyList();
       renderBoard();
       renderGroupsTab();
-      loadData(); // Háttérben frissít
+      loadData();
     }
 
-    // ================= CSOPORT KEZELÉS LOGIKA =================
+    // ================= CSOPORT KEZELÉS =================
     async function createNewGroup(e) {
       e.preventDefault();
       const name = document.getElementById('new-group-name').value.trim();
@@ -1072,7 +1097,49 @@
       switchTab('board');
     }
 
-    // ================= FA / CSOPORT VÁLASZTÓ MODAL LOGIKA =================
+    // ================= KARÁCSONYFA MODAL MEGNYITÁSA =================
+    function openTreeModal() {
+      if (selectedGroupCode === 'ALL_MY_GROUPS') {
+        alert("Kérlek, válassz ki egy konkrét csoportot fent (pl. Farkas Család), hogy láthasd az adott fa alatti ajándékokat!");
+        return;
+      }
+
+      const grpName = getGroupName(selectedGroupCode);
+      document.getElementById('tree-modal-title.textContent`') = `${grpName} - Fa alatti ajándékok`;
+      document.getElementById('tree-modal-title').textContent = `${grpName} - Fa alatti ajándékok`;
+
+      // Szűrjük azokat a tételeket, amiket ebben a csoportban vettek meg vagy foglaltak le
+      const treeGifts = allWishes.filter(w => w.claimed_group === selectedGroupCode && (w.status === 'bought' || w.status === 'reserved'));
+      const container = document.getElementById('tree-gifts-container');
+
+      if (treeGifts.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-6 text-emerald-200/80 text-xs italic">
+            Még üres a fa alatti terület! Ha lefoglaltok vagy megvesztek ajándékokat ebben a csoportban, itt gyűlnek majd a dobozok. 🎁
+          </div>`;
+      } else {
+        container.innerHTML = treeGifts.map(gift => `
+          <div class="bg-emerald-900/90 border border-amber-400/50 p-3 rounded-2xl shadow-md text-center flex flex-col justify-between">
+            <div>
+              <div class="text-2xl mb-1">🎁</div>
+              <p class="font-extrabold text-xs text-white line-clamp-2">${escapeHtml(gift.title)}</p>
+              <p class="text-[10px] text-amber-300 mt-1">Címzett: <b>${escapeHtml(gift.owner_name)}</b></p>
+            </div>
+            <div class="mt-2 pt-2 border-t border-emerald-800 text-[10px] text-emerald-200">
+              Vevő: ${escapeHtml(gift.claimed_by)}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('tree-modal').classList.remove('hidden');
+    }
+
+    function closeTreeModal() {
+      document.getElementById('tree-modal').classList.add('hidden');
+    }
+
+    // ================= FA / CSOPORT VÁLASZTÓ MODAL (ÖSSZESÍTETT) =================
     function openTreePickerForAction(targetOwner, onSelectCallback) {
       const myGroups = getCurrentUserObj().groups || [];
       const ownerObj = allUsers.find(u => u.username === targetOwner);
@@ -1113,9 +1180,8 @@
       document.getElementById('tree-picker-modal').classList.add('hidden');
     }
 
-    // ================= KÍVÁNSÁGOK LOGIKA (AZONNALI REAKCIÓVAL) =================
+    // ================= KÍVÁNSÁGOK LOGIKA =================
     async function saveWishToDb(newItem) {
-      // Azonnali megjelenítés a felületen
       const tempId = 'temp_' + Date.now();
       const optimisticItem = { ...newItem, id: tempId };
       allWishes.push(optimisticItem);
@@ -1226,13 +1292,11 @@
         return;
       }
 
-      // AZONNALI (0ms) vizuális frissítés a memóriában és a képernyőn:
       wish.status = newStatus;
       wish.claimed_by = claimedBy;
       wish.claimed_group = claimedGroup;
       renderBoard();
 
-      // Háttérben mentés a Supabase-be:
       if (isDemoMode) {
         localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
       } else {
