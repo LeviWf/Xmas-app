@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Karácsonyi Kívánságlista 🎄</title>
   <link rel="icon" type="image/png" href="icon.png?v=2">
-<link rel="apple-touch-icon" href="icon.png?v=2">
-    <link rel="icon" type="image/png" href="icon.png?v=3">
+  <link rel="apple-touch-icon" href="icon.png?v=2">
+  <link rel="icon" type="image/png" href="icon.png?v=3">
   <link rel="apple-touch-icon" sizes="180x180" href="https://leviwf.github.io/Xmas-app/icon.png?v=3">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -321,7 +321,6 @@
               🕵️ + Titkos meglepetés felírása
             </button>
           </div>
-          <!-- Flex-wrap: mobilon szépen több sorba törik, sosem lóg ki és nem vágja le a gombokat! -->
           <div id="board-group-selector" class="flex flex-wrap gap-2"></div>
         </div>
 
@@ -338,7 +337,6 @@
 
             <!-- ELŐLAP: Személyszűrő + Kívánságtáblák -->
             <div id="flip-front-content" class="flip-face flip-front w-full space-y-4">
-              <!-- Flex-wrap: akár 10+ családtagnál sem nyomja szét a mobil képernyőt -->
               <div id="family-filters" class="flex flex-wrap gap-2"></div>
               <div id="board-container" class="space-y-5"></div>
             </div>
@@ -347,50 +345,49 @@
             <div id="flip-back-content" class="flip-face flip-back w-full">
               <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-900/40 bg-[#6e3f23] relative">
                 
+                <!-- Információs sáv a szoba tetején: melyik csoport fáját nézzük épp -->
+                <div class="bg-emerald-950/90 text-amber-200 text-xs sm:text-sm font-bold px-4 py-2.5 flex items-center justify-between border-b border-amber-800/50">
+                  <span id="room-group-label">🎄 Kiválasztott csoport fája</span>
+                  <span id="room-presents-counter" class="bg-red-700 text-white px-2.5 py-0.5 rounded-full text-xs font-extrabold">0 db ajándék</span>
+                </div>
+
                 <!-- Gazdag Vektoros Karácsonyi Nappali -->
                 <svg viewBox="0 0 900 540" class="w-full h-auto block">
                   <defs>
-                    <!-- Meleg faburkolat a falon -->
                     <pattern id="warm-wall-planks" width="45" height="400" patternUnits="userSpaceOnUse">
                       <rect width="45" height="400" fill="#6b3d22"/>
                       <line x1="0" y1="0" x2="0" y2="400" stroke="#4e2a15" stroke-width="2.5"/>
                       <rect x="2" y="0" width="12" height="400" fill="#764528" opacity="0.35"/>
                     </pattern>
 
-                    <!-- Világosabb faburkolat a kandalló kéményén -->
                     <pattern id="chimney-planks" width="44" height="400" patternUnits="userSpaceOnUse">
                       <rect width="44" height="400" fill="#b96d38"/>
                       <line x1="0" y1="0" x2="0" y2="400" stroke="#8f4e22" stroke-width="2"/>
                       <rect x="4" y="0" width="14" height="400" fill="#c97d46" opacity="0.4"/>
                     </pattern>
 
-                    <!-- Meleg fapadló színátmenet -->
                     <linearGradient id="warm-floor-grad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stop-color="#c87d44"/>
                       <stop offset="50%" stop-color="#b56932"/>
                       <stop offset="100%" stop-color="#965222"/>
                     </linearGradient>
 
-                    <!-- Kandalló meleg fénye a szobában -->
                     <radialGradient id="hearth-warm-glow" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/>
                       <stop offset="55%" stop-color="#ea580c" stop-opacity="0.22"/>
                       <stop offset="100%" stop-color="#ea580c" stop-opacity="0"/>
                     </radialGradient>
 
-                    <!-- Éjszakai havas égbolt az ablakban -->
                     <linearGradient id="night-sky-grad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stop-color="#0f2547"/>
                       <stop offset="65%" stop-color="#1e4976"/>
                       <stop offset="100%" stop-color="#3b6ea5"/>
                     </linearGradient>
 
-                    <!-- Ablak vágómaszk a havas tájhoz és hóeséshez -->
                     <clipPath id="window-pane-clip">
                       <rect x="612" y="62" width="226" height="246" rx="3"/>
                     </clipPath>
 
-                    <!-- Mintás csomagolópapírok az ajándékokhoz -->
                     <pattern id="gift-stripes-green" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
                       <rect width="10" height="10" fill="#15803d"/>
                       <rect width="5" height="10" fill="#22c55e"/>
@@ -401,7 +398,7 @@
                     </pattern>
                   </defs>
 
-                  <!-- ================= 1. HÁTTÉRFAL ÉS PADLÓ (TÉR DEFINIÁLÁSA) ================= -->
+                  <!-- ================= 1. HÁTTÉRFAL ÉS PADLÓ ================= -->
                   <rect x="0" y="0" width="900" height="395" fill="url(#warm-wall-planks)"/>
                   <rect x="338" y="0" width="224" height="395" fill="url(#chimney-planks)" stroke="#4e2a15" stroke-width="3"/>
                   <rect x="0" y="384" width="900" height="14" fill="#432310" stroke="#2d1609" stroke-width="1.5"/>
@@ -419,7 +416,7 @@
                     <line x1="780" y1="398" x2="860" y2="540"/>
                   </g>
 
-                  <!-- ================= 2. ABLAK ÉS HAVAS TÁJ (JOBB OLDAL) ================= -->
+                  <!-- ================= 2. ABLAK ÉS HAVAS TÁJ ================= -->
                   <rect x="602" y="52" width="246" height="266" rx="4" fill="#7c4322" stroke="#432310" stroke-width="3"/>
                   <g clip-path="url(#window-pane-clip)">
                     <rect x="612" y="62" width="226" height="246" fill="url(#night-sky-grad)"/>
@@ -466,7 +463,6 @@
                   <!-- ================= 4. KANDALLÓ, KOSZORÚ, ZOKNIK ÉS ÉGŐ TŰZ ================= -->
                   <circle cx="450" cy="365" r="150" fill="url(#hearth-warm-glow)" class="fire-ambient"/>
 
-                  <!-- Bekeretezett Karácsonyi Koszorú -->
                   <g>
                     <line x1="450" y1="52" x2="412" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
                     <line x1="450" y1="52" x2="488" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
@@ -487,7 +483,6 @@
                     <circle cx="450" cy="105" r="4" fill="#ef4444"/>
                   </g>
 
-                  <!-- Fenyőgirland és gyertya a párkányon -->
                   <g>
                     <path d="M 335 222 Q 380 198 440 218 Q 500 198 565 222" fill="none" stroke="#14532d" stroke-width="14" stroke-linecap="round"/>
                     <path d="M 340 222 Q 390 202 450 220 Q 510 202 560 222" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" stroke-dasharray="12 8"/>
@@ -497,7 +492,6 @@
                     <rect x="436" y="216" width="28" height="5" rx="2" fill="#dc2626"/>
                   </g>
 
-                  <!-- Kandalló Téglaépítmény -->
                   <rect x="330" y="236" width="240" height="168" fill="#b45b32" stroke="#5c2c16" stroke-width="2.5"/>
                   <g fill="#9a4421" opacity="0.75">
                     <rect x="336" y="244" width="38" height="14" rx="1"/>
@@ -529,13 +523,11 @@
                     <rect x="524" y="330" width="36" height="14" rx="1"/>
                   </g>
 
-                  <!-- Kandalló párkány és tűztér -->
                   <rect x="312" y="218" width="276" height="22" rx="4" fill="#6b381b" stroke="#3b1d0b" stroke-width="2.5"/>
                   <rect x="320" y="240" width="260" height="7" fill="#4e2710"/>
                   <path d="M 386 392 L 386 306 A 64 48 0 0 1 514 306 L 514 392 Z" fill="#2b1208" stroke="#4e2210" stroke-width="4"/>
                   <path d="M 396 392 L 396 312 A 54 40 0 0 1 504 312 L 504 392 Z" fill="#451a0a"/>
 
-                  <!-- Lobogó Tűz -->
                   <g>
                     <path class="fire-outer" d="M 412 382 C 402 350 422 320 435 296 C 442 315 450 302 454 282 C 466 308 475 318 480 302 C 492 328 498 355 488 382 Z" fill="#ea580c"/>
                     <path class="fire-mid" d="M 422 382 C 415 355 430 332 442 312 C 448 328 455 310 460 298 C 470 322 484 350 478 382 Z" fill="#f97316"/>
@@ -543,7 +535,6 @@
                     <path class="fire-inner" d="M 442 382 C 440 368 446 355 450 345 C 454 355 460 368 458 382 Z" fill="#fef08a"/>
                   </g>
 
-                  <!-- Farönkök és rostély -->
                   <g>
                     <rect x="415" y="374" width="70" height="12" rx="5" fill="#4e2611" transform="rotate(-6 450 380)"/>
                     <rect x="415" y="374" width="70" height="12" rx="5" fill="#3b1b0a" transform="rotate(7 450 380)"/>
@@ -552,7 +543,6 @@
 
                   <rect x="318" y="392" width="264" height="18" rx="3" fill="#5c2c16" stroke="#3b1d0b" stroke-width="2"/>
 
-                  <!-- 3 Karácsonyi Zokni -->
                   <g transform="translate(362, 232) rotate(8)">
                     <path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
                     <path d="M 2 22 L 25 22 M 2 28 L 24 28" stroke="#fef08a" stroke-width="2.5"/>
@@ -573,7 +563,7 @@
                     <rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
                   </g>
 
-                  <!-- ================= 5. FOTEL ÉS PÁRNA (JOBB OLDAL) ================= -->
+                  <!-- ================= 5. FOTEL ÉS PÁRNA ================= -->
                   <g>
                     <polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/>
                     <polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/>
@@ -586,7 +576,7 @@
                     <rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/>
                   </g>
 
-                  <!-- ================= 6. TÖBBRÉTEGŰ KARÁCSONYFA (BAL OLDAL) ================= -->
+                  <!-- ================= 6. TÖBBRÉTEGŰ KARÁCSONYFA ================= -->
                   <g>
                     <rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/>
                     <path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/>
@@ -670,11 +660,10 @@
       <!-- ======================================================== -->
       <div id="section-groups" class="hidden space-y-6 w-full">
         <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs sm:text-sm text-amber-950">
-          <strong>🎄 Mire jók a csoportok?</strong> Létrehozhatsz külön csoportokat. A Táblákon mindenki csak azoknak a listáját látja, akikkel van közös csoportja – így elkerülhető, hogy olyanok lássák egymás listáját, akik nem ajándékoznak egymásnak!
+          <strong>🎄 Mire jók a csoportok?</strong> Létrehozhatsz külön csoportokat. A Táblákon mindenki csak azoknak a listáját látja, akikkel van közös csoportja – és minden megvett ajándék pontosan annak a csoportnak a fája alá kerül, ahol megvették!
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <!-- Csatlakozás meglévő csoporthoz -->
           <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-emerald-800/10">
             <h3 class="font-extrabold text-emerald-950 mb-1 flex items-center gap-2">
               <span>🔑</span> Csatlakozás meghívó kóddal
@@ -690,7 +679,6 @@
             <div id="join-group-msg" class="text-xs mt-2 font-semibold hidden"></div>
           </div>
 
-          <!-- Új csoport létrehozása -->
           <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-red-800/10">
             <h3 class="font-extrabold text-red-950 mb-1 flex items-center gap-2">
               <span>✨</span> Új csoport alapítása
@@ -710,7 +698,6 @@
           </div>
         </div>
 
-        <!-- Saját csoportjaim listája -->
         <div>
           <h3 class="font-extrabold text-emerald-950 text-sm uppercase tracking-wider mb-3 px-1">Csoportok, amiknek tagja vagy</h3>
           <div id="my-groups-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
@@ -728,9 +715,13 @@
         <button onclick="closeSecretModal()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
       </div>
       <p class="text-xs text-slate-600 mb-4">
-        Olyan ajándékot vettél valakinek, ami nincs a listáján? Írd fel ide! <b>Ő sosem látja</b> a saját listáján, de a többiek látják a Táblákon, hogy te már megvetted.
+        Olyan ajándékot vettél valakinek, ami nincs a listáján? Írd fel ide! <b>Ő sosem látja</b> a saját listáján, de a többiek látják a Táblákon, és bekerül az adott csoport fája alá.
       </p>
       <form onsubmit="addWish(event, true)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-emerald-900 mb-1">Melyik csoport fája alá kerüljön?</label>
+          <select id="secret-target-group" onchange="updateSecretUsersList()" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold"></select>
+        </div>
         <div>
           <label class="block text-xs font-bold text-emerald-900 mb-1">Kinek szánod?</label>
           <select id="secret-target-user" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold"></select>
@@ -830,6 +821,48 @@
 
     function getCurrentUserObj() {
       return allUsers.find(u => u.username === currentUser) || { username: currentUser, groups: [] };
+    }
+
+    function getGroupNameByCode(code) {
+      if (!code) return '';
+      const found = allGroups.find(g => g.code === code);
+      return found ? found.name : code;
+    }
+
+    // Segédfüggvény: meghatározza, melyik csoportba könyveljük el a vásárlást/foglalást
+    function resolveTargetGroupForWish(ownerName) {
+      const myGroups = getCurrentUserObj().groups || [];
+      const ownerObj = allUsers.find(u => u.username === ownerName);
+      const ownerGroups = ownerObj?.groups || [];
+
+      // 1. Ha épp egy konkrét csoport van kiválasztva a Táblán (és az ajándékozott is tagja), akkor abba a csoportba kerül
+      if (selectedGroupCode !== 'ALL_MY_GROUPS' && ownerGroups.includes(selectedGroupCode)) {
+        return selectedGroupCode;
+      }
+
+      // 2. Ha a "Minden csoportom" nézetben nyomott rá, megkeressük a közös csoportokat
+      const sharedGroups = myGroups.filter(code => ownerGroups.includes(code));
+      if (sharedGroups.length === 1) {
+        return sharedGroups[0];
+      }
+
+      // 3. Ha több közös csoportjuk is van és "Minden csoportom" nézetben van, megkérdezzük, melyik fa alá szánja
+      if (sharedGroups.length > 1) {
+        const optionsText = sharedGroups
+          .map((code, idx) => `${idx + 1}: ${getGroupNameByCode(code)} (${code})`)
+          .join('\n');
+        const choice = prompt(
+          `Több közös csoportotok is van ${ownerName}-val/vel!\nÍrd be a számát, amelyik csoport fája alá szánod ezt az ajándékot:\n\n${optionsText}`,
+          "1"
+        );
+        const parsedIdx = parseInt(choice, 10) - 1;
+        if (!isNaN(parsedIdx) && sharedGroups[parsedIdx]) {
+          return sharedGroups[parsedIdx];
+        }
+        return sharedGroups[0];
+      }
+
+      return myGroups[0] || null;
     }
 
     // Belépés / Regisztráció
@@ -938,6 +971,20 @@
 
     function updateRoomPresents(boughtCount) {
       const layer = document.getElementById('svg-presents-layer');
+      const labelEl = document.getElementById('room-group-label');
+      const counterEl = document.getElementById('room-presents-counter');
+
+      if (labelEl) {
+        if (selectedGroupCode === 'ALL_MY_GROUPS') {
+          labelEl.textContent = '🎄 Minden csoportom (összesített fa)';
+        } else {
+          labelEl.textContent = `🎄 ${getGroupNameByCode(selectedGroupCode)} – közös karácsonyfa`;
+        }
+      }
+      if (counterEl) {
+        counterEl.textContent = `${boughtCount} db megvett ajándék a fa alatt`;
+      }
+
       if (!layer) return;
       layer.innerHTML = '';
 
@@ -1143,6 +1190,7 @@
           priority: document.getElementById('wish-priority').value,
           status: 'available',
           claimed_by: null,
+          claimed_in_group: null,
           is_secret: false,
           deleted_by_owner: false
         };
@@ -1150,6 +1198,7 @@
         document.getElementById('wish-link').value = '';
         document.getElementById('wish-note').value = '';
       } else {
+        const targetGroupCode = document.getElementById('secret-target-group').value;
         newItem = {
           owner_name: document.getElementById('secret-target-user').value,
           title: document.getElementById('secret-title').value.trim(),
@@ -1158,6 +1207,7 @@
           priority: 'normal',
           status: 'bought',
           claimed_by: currentUser,
+          claimed_in_group: targetGroupCode,
           is_secret: true,
           deleted_by_owner: false
         };
@@ -1169,7 +1219,12 @@
         allWishes.push(newItem);
         localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
       } else {
-        await supabaseClient.from('wishes').insert([newItem]);
+        const { error } = await supabaseClient.from('wishes').insert([newItem]);
+        if (error && error.message && error.message.includes('claimed_in_group')) {
+          const fallbackItem = { ...newItem };
+          delete fallbackItem.claimed_in_group;
+          await supabaseClient.from('wishes').insert([fallbackItem]);
+        }
       }
       await loadData();
     }
@@ -1201,6 +1256,10 @@
       if (!wish) return;
 
       const claimedBy = newStatus === 'available' ? null : currentUser;
+      // Ha lefoglalja vagy megveszi, eltároljuk, melyik csoportban tette!
+      const claimedInGroup = newStatus === 'available'
+        ? null
+        : (wish.claimed_in_group || resolveTargetGroupForWish(wish.owner_name));
 
       if (wish.is_secret && newStatus === 'available') {
         if (isDemoMode) {
@@ -1216,9 +1275,21 @@
       if (isDemoMode) {
         wish.status = newStatus;
         wish.claimed_by = claimedBy;
+        wish.claimed_in_group = claimedInGroup;
         localStorage.setItem('xmas_v3_demo_wishes', JSON.stringify(allWishes));
       } else {
-        await supabaseClient.from('wishes').update({ status: newStatus, claimed_by: claimedBy }).eq('id', id);
+        const { error } = await supabaseClient
+          .from('wishes')
+          .update({ status: newStatus, claimed_by: claimedBy, claimed_in_group: claimedInGroup })
+          .eq('id', id);
+
+        // Ha a felhasználó még nem futtatta le az ALTER TABLE-t a Supabase-ben, ne akadjon el a gomb:
+        if (error && error.message && error.message.includes('claimed_in_group')) {
+          await supabaseClient
+            .from('wishes')
+            .update({ status: newStatus, claimed_by: claimedBy })
+            .eq('id', id);
+        }
       }
       await loadData();
     }
@@ -1256,6 +1327,30 @@
       `).join('');
     }
 
+    // Ellenőrzi, hogy egy megvett ajándék az adott csoport fája alá tartozik-e
+    function doesWishBelongToGroupTree(wish, groupCode) {
+      if (wish.status !== 'bought') return false;
+
+      // Ha van eltárolt csoportkód az ajándékon, CSAK abban a csoportban jelenik meg a fa alatt!
+      if (wish.claimed_in_group) {
+        return wish.claimed_in_group === groupCode;
+      }
+
+      // Visszafelé kompatibilitás (korábban megvett ajándékokra, amiknél még nem volt claimed_in_group):
+      // Csak akkor számoljuk bele, ha a vásárló ÉS a megajándékozott is tagja ennek a csoportnak,
+      // és ez az első közös csoportjuk (hogy a régiek se duplikálódjanak minden fa alatt).
+      const ownerObj = allUsers.find(u => u.username === wish.owner_name);
+      const buyerObj = allUsers.find(u => u.username === wish.claimed_by);
+      const ownerGroups = ownerObj?.groups || [];
+      const buyerGroups = buyerObj?.groups || [];
+      const sharedBetweenThem = ownerGroups.filter(c => buyerGroups.includes(c));
+
+      if (sharedBetweenThem.length > 0) {
+        return sharedBetweenThem[0] === groupCode;
+      }
+      return ownerGroups[0] === groupCode;
+    }
+
     // 2. RENDER: Családi Táblák + Karácsonyi Szoba Ajándékainak Frissítése
     function renderBoard() {
       const groupSelector = document.getElementById('board-group-selector');
@@ -1281,7 +1376,7 @@
         return;
       }
 
-      // Csoport választó gombok (többsoros tördeléssel mobilon)
+      // Csoport választó gombok
       groupSelector.innerHTML = `
         <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
           🌟 Minden csoportom (${myGroupCodes.length})
@@ -1303,11 +1398,19 @@
         .filter(u => u.username !== currentUser && (u.groups || []).some(code => activeGroupCodes.includes(code)))
         .map(u => u.username);
 
-      // Megszámoljuk, hány megvett ('bought') ajándék van az éppen kiválasztott csoportban
-      const boughtInCurrentGroup = allWishes.filter(w => visibleUsers.includes(w.owner_name) && w.status === 'bought').length;
+      // PONTOS AJÁNDÉKSZÁMLÁLÁS A FA ALATT:
+      // Csak azokat a megvett ajándékokat számoljuk, amiket KIFEJEZETTEN az éppen kiválasztott csoportban vettek meg!
+      const boughtInCurrentGroup = allWishes.filter(w => {
+        if (!visibleUsers.includes(w.owner_name) || w.status !== 'bought') return false;
+        if (selectedGroupCode === 'ALL_MY_GROUPS') {
+          return myGroupCodes.some(code => doesWishBelongToGroupTree(w, code));
+        }
+        return doesWishBelongToGroupTree(w, selectedGroupCode);
+      }).length;
+
       updateRoomPresents(boughtInCurrentGroup);
 
-      // Személy szűrő gombok (többsoros tördeléssel mobilon)
+      // Személy szűrő gombok
       filtersContainer.innerHTML = `
         <button onclick="setPersonFilter('ALL')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedPersonFilter === 'ALL' ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
           Összes tag a körben (${visibleUsers.length})
@@ -1332,7 +1435,14 @@
           .filter(c => myGroupCodes.includes(c))
           .map(c => (allGroups.find(g => g.code === c)?.name || c));
 
-        const personWishes = allWishes.filter(w => w.owner_name === person);
+        // Titkos meglepetéseknél csak azt mutassuk, amit az adott csoportban írtak fel
+        const personWishes = allWishes.filter(w => {
+          if (w.owner_name !== person) return false;
+          if (w.is_secret && w.claimed_in_group && selectedGroupCode !== 'ALL_MY_GROUPS') {
+            return w.claimed_in_group === selectedGroupCode;
+          }
+          return true;
+        });
 
         return `
           <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-900/15 overflow-hidden w-full">
@@ -1364,12 +1474,14 @@
       let cardStyle = "bg-white border-slate-200";
       let statusBadge = "";
 
+      const groupLabel = item.claimed_in_group ? ` (${escapeHtml(getGroupNameByCode(item.claimed_in_group))})` : '';
+
       if (isBought) {
         cardStyle = "bg-emerald-100/90 border-2 border-emerald-500 shadow-sm";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${escapeHtml(item.claimed_by)} megvette!</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${escapeHtml(item.claimed_by)} megvette!${groupLabel}</span>`;
       } else if (isReserved) {
         cardStyle = "bg-amber-50/90 border-2 border-amber-400";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${escapeHtml(item.claimed_by)} lefoglalta</span>`;
+        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${escapeHtml(item.claimed_by)} lefoglalta${groupLabel}</span>`;
       }
 
       return `
@@ -1426,20 +1538,37 @@
     }
 
     function openSecretModal() {
-      const select = document.getElementById('secret-target-user');
+      const groupSelect = document.getElementById('secret-target-group');
       const myGroupCodes = getCurrentUserObj().groups || [];
-      const visibleUsers = allUsers
-        .filter(u => u.username !== currentUser && (u.groups || []).some(c => myGroupCodes.includes(c)))
-        .map(u => u.username);
 
-      if (visibleUsers.length === 0) {
+      if (myGroupCodes.length === 0) {
         alert("Először lépj be egy csoportba, ahol vannak más családtagok is!");
         return;
       }
-      select.innerHTML = visibleUsers.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+
+      groupSelect.innerHTML = myGroupCodes.map(code => {
+        const isSelected = (selectedGroupCode !== 'ALL_MY_GROUPS' && selectedGroupCode === code) ? 'selected' : '';
+        return `<option value="${escapeHtml(code)}" ${isSelected}>${escapeHtml(getGroupNameByCode(code))} (${escapeHtml(code)})</option>`;
+      }).join('');
+
+      updateSecretUsersList();
       document.getElementById('secret-title').value = '';
       document.getElementById('secret-note').value = '';
       document.getElementById('secret-modal').classList.remove('hidden');
+    }
+
+    function updateSecretUsersList() {
+      const groupCode = document.getElementById('secret-target-group').value;
+      const userSelect = document.getElementById('secret-target-user');
+      const members = allUsers
+        .filter(u => u.username !== currentUser && (u.groups || []).includes(groupCode))
+        .map(u => u.username);
+
+      if (members.length === 0) {
+        userSelect.innerHTML = `<option value="" disabled selected>Nincs más tag ebben a csoportban</option>`;
+      } else {
+        userSelect.innerHTML = members.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
+      }
     }
 
     function closeSecretModal() {
