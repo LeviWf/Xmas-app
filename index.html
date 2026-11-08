@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="https://leviwf.github.io/Xmas-app/icon.png?v=3">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     html, body {
       max-width: 100%;
@@ -142,6 +142,28 @@
       0% { opacity: 0; transform: scale(0); }
       100% { opacity: 1; transform: scale(1); }
     }
+
+    /* --- PAPÍR HATÁSÚ BEVÁSÁRLÓLISTA --- */
+    .paper-notepad {
+      background-color: #fdfaf2;
+      background-image: repeating-linear-gradient(transparent, transparent 35px, #e6dec8 35px, #e6dec8 36px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(180, 160, 120, 0.35);
+      position: relative;
+    }
+    /* Piros függőleges margócsík a bal oldalon */
+    .paper-notepad::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 34px;
+      width: 2px;
+      background-color: rgba(220, 38, 38, 0.28);
+      pointer-events: none;
+    }
+    .font-cursive {
+      font-family: 'Caveat', cursive;
+    }
   </style>
 </head>
 <body class="text-slate-800 pb-24 min-h-screen">
@@ -203,9 +225,11 @@
       </div>
 
       <div id="user-controls" class="hidden flex items-center space-x-2 sm:space-x-3 shrink-0">
-        <span class="text-xs sm:text-sm bg-emerald-950/70 border border-emerald-600/50 px-3 py-1.5 rounded-full font-semibold text-emerald-100">
-          🦌 <span id="current-user-display"></span>
-        </span>
+        <button onclick="openEmojiModal()" title="Kattints az ünnepi emojid módosításához!" class="text-xs sm:text-sm bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-600/50 px-3 py-1.5 rounded-full font-semibold text-emerald-100 transition flex items-center gap-1.5">
+          <span id="current-user-emoji">🦌</span>
+          <span id="current-user-display"></span>
+          <span class="text-[10px] opacity-60">✏️</span>
+        </button>
         <button onclick="logout()" class="text-xs bg-red-700 hover:bg-red-600 border border-red-500 px-3 py-1.5 rounded-xl font-semibold transition shadow-sm">
           Kilépés
         </button>
@@ -234,6 +258,11 @@
           <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1">4 jegyű PIN kód</label>
           <input type="password" id="auth-pin" required pattern="[0-9]{4}" maxlength="4" inputmode="numeric" placeholder="••••" 
             class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition text-center text-xl tracking-widest font-bold text-red-700">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1.5">Válassz ünnepi karaktert (Emojit)</label>
+          <input type="hidden" id="auth-emoji" value="🦌">
+          <div id="auth-emoji-grid" class="grid grid-cols-6 gap-1.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200 max-h-36 overflow-y-auto"></div>
         </div>
         <div id="auth-error" class="text-sm text-red-700 bg-red-50 border border-red-200 p-3 rounded-xl hidden font-medium"></div>
         <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
@@ -302,6 +331,28 @@
             <span class="text-xs bg-red-100 text-red-800 font-semibold px-2.5 py-1 rounded-full">🤫 Meglepetés-védelem aktív</span>
           </div>
           <div id="my-wishes-container" class="space-y-3"></div>
+        </div>
+
+        <!-- PAPÍR HATÁSÚ BEVÁSÁRLÓLISTÁM (Lefoglalt és megvett ajándékok másoknak) -->
+        <div class="pt-4">
+          <div class="paper-notepad rounded-2xl p-4 sm:p-6 pl-11 sm:pl-12 border border-amber-900/20">
+            <!-- Dekoratív cellux csík felül -->
+            <div class="w-24 h-5 bg-amber-200/60 border border-amber-300/50 mx-auto -mt-6 sm:-mt-8 mb-3 rotate-[-2deg] shadow-sm"></div>
+
+            <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
+              <h3 class="font-cursive text-2xl sm:text-3xl font-bold text-amber-950 tracking-wide">
+                🛒 Karácsonyi Bevásárlólistám
+              </h3>
+              <span id="shopping-list-counter" class="text-xs font-bold bg-amber-900/10 text-amber-950 px-2.5 py-1 rounded-full">
+                0 / 0 beszerezve
+              </span>
+            </div>
+            <p class="text-xs text-amber-900/75 mb-4">
+              Itt látod egyben, amiket mások listájáról lefoglaltál. Ha kipipálod, a csoportban automatikusan <b>Megvettem</b> státuszra vált (és bekerül a fa alá)!
+            </p>
+
+            <div id="my-shopping-list-container" class="space-y-1"></div>
+          </div>
         </div>
       </div>
 
@@ -742,6 +793,18 @@
     </div>
   </div>
 
+  <!-- ================= EMOJI VÁLASZTÓ MODAL ================= -->
+  <div id="emoji-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-emerald-700 fade-in">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-extrabold text-lg text-emerald-950">🎄 Ünnepi Emoji kiválasztása</h3>
+        <button onclick="closeEmojiModal()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4">Válassz egy ikont a hivatalos karácsonyi készletből, ami a neved mellett jelenik meg:</p>
+      <div id="modal-emoji-grid" class="grid grid-cols-5 gap-2 p-2.5 bg-slate-50 rounded-2xl border border-slate-200 max-h-60 overflow-y-auto"></div>
+    </div>
+  </div>
+
   <!-- ================= JAVASCRIPT LOGIKA ================= -->
   <script>
     // 1. Fektetett Candy Cane Betöltő Animáció
@@ -782,6 +845,71 @@
     let allGroups = [];
     let allWishes = [];
 
+    // Emojipedia Christmas hivatalos karácsonyi emoji készlet
+    const CHRISTMAS_EMOJIS = [
+      '🎅', '🤶', '🧑‍🎄', '🦌', '🎄', '🎁', '⛄', '☃️', '❄️', '🌟',
+      '🔔', '🕯️', '🧦', '🍪', '🥛', '🍷', '🥂', '🍾', '🥧', '🍫',
+      '🍬', '🍭', '🧤', '🧣', '🛷', '⛸️', '🎿', '🏂', '👼', '🎶'
+    ];
+
+    function getUserEmoji(username) {
+      const u = allUsers.find(user => user.username === username);
+      return (u && u.avatar) ? u.avatar : '🦌';
+    }
+
+    function initEmojiPickers() {
+      const authGrid = document.getElementById('auth-emoji-grid');
+      const authInput = document.getElementById('auth-emoji');
+      if (authGrid && authInput) {
+        authGrid.innerHTML = CHRISTMAS_EMOJIS.map(em => `
+          <button type="button" onclick="selectAuthEmoji('${em}')" data-emoji="${em}"
+            class="auth-emoji-btn text-xl p-1.5 rounded-xl transition flex items-center justify-center ${em === authInput.value ? 'bg-red-600 text-white shadow scale-110' : 'hover:bg-emerald-100'}">
+            ${em}
+          </button>
+        `).join('');
+      }
+    }
+
+    function selectAuthEmoji(emoji) {
+      document.getElementById('auth-emoji').value = emoji;
+      document.querySelectorAll('.auth-emoji-btn').forEach(btn => {
+        if (btn.dataset.emoji === emoji) {
+          btn.className = "auth-emoji-btn text-xl p-1.5 rounded-xl transition flex items-center justify-center bg-red-600 text-white shadow scale-110";
+        } else {
+          btn.className = "auth-emoji-btn text-xl p-1.5 rounded-xl transition flex items-center justify-center hover:bg-emerald-100";
+        }
+      });
+    }
+
+    function openEmojiModal() {
+      const modalGrid = document.getElementById('modal-emoji-grid');
+      const currentEm = getUserEmoji(currentUser);
+      modalGrid.innerHTML = CHRISTMAS_EMOJIS.map(em => `
+        <button type="button" onclick="saveNewEmoji('${em}')"
+          class="text-2xl p-2 rounded-xl transition flex items-center justify-center ${em === currentEm ? 'bg-red-600 text-white shadow scale-105' : 'hover:bg-emerald-100 bg-white border border-slate-200'}">
+          ${em}
+        </button>
+      `).join('');
+      document.getElementById('emoji-modal').classList.remove('hidden');
+    }
+
+    function closeEmojiModal() {
+      document.getElementById('emoji-modal').classList.add('hidden');
+    }
+
+    async function saveNewEmoji(newEmoji) {
+      const userObj = getCurrentUserObj();
+      userObj.avatar = newEmoji;
+      if (isDemoMode) {
+        localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
+      } else {
+        await supabaseClient.from('family_users').update({ avatar: newEmoji }).eq('username', currentUser);
+      }
+      closeEmojiModal();
+      await loadData();
+    }
+    window.addEventListener('DOMContentLoaded', initEmojiPickers);
+
     function initDemoData() {
       if (!localStorage.getItem('xmas_v3_demo_users')) {
         localStorage.setItem('xmas_v3_demo_groups', JSON.stringify([]));
@@ -813,7 +941,10 @@
         allWishes = wData || [];
       }
       if (currentUser) {
+        const emojiEl = document.getElementById('current-user-emoji');
+        if (emojiEl) emojiEl.textContent = getUserEmoji(currentUser);
         renderMyList();
+        renderMyShoppingList();
         renderBoard();
         renderGroupsTab();
       }
@@ -835,18 +966,15 @@
       const ownerObj = allUsers.find(u => u.username === ownerName);
       const ownerGroups = ownerObj?.groups || [];
 
-      // 1. Ha épp egy konkrét csoport van kiválasztva a Táblán (és az ajándékozott is tagja), akkor abba a csoportba kerül
       if (selectedGroupCode !== 'ALL_MY_GROUPS' && ownerGroups.includes(selectedGroupCode)) {
         return selectedGroupCode;
       }
 
-      // 2. Ha a "Minden csoportom" nézetben nyomott rá, megkeressük a közös csoportokat
       const sharedGroups = myGroups.filter(code => ownerGroups.includes(code));
       if (sharedGroups.length === 1) {
         return sharedGroups[0];
       }
 
-      // 3. Ha több közös csoportjuk is van és "Minden csoportom" nézetben van, megkérdezzük, melyik fa alá szánja
       if (sharedGroups.length > 1) {
         const optionsText = sharedGroups
           .map((code, idx) => `${idx + 1}: ${getGroupNameByCode(code)} (${code})`)
@@ -870,6 +998,7 @@
       e.preventDefault();
       const usernameInput = document.getElementById('auth-username').value.trim();
       const pinInput = document.getElementById('auth-pin').value.trim();
+      const chosenEmoji = document.getElementById('auth-emoji')?.value || '🦌';
       const errorBox = document.getElementById('auth-error');
       errorBox.classList.add('hidden');
 
@@ -883,14 +1012,26 @@
           return;
         }
         currentUser = existingUser.username;
+        if (!existingUser.avatar || chosenEmoji !== '🦌') {
+          existingUser.avatar = chosenEmoji;
+          if (isDemoMode) {
+            localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
+          } else {
+            await supabaseClient.from('family_users').update({ avatar: chosenEmoji }).eq('username', currentUser);
+          }
+        }
       } else {
         currentUser = usernameInput;
-        const newUserObj = { username: currentUser, pin: pinInput, groups: [] };
+        const newUserObj = { username: currentUser, pin: pinInput, groups: [], avatar: chosenEmoji };
         if (isDemoMode) {
           allUsers.push(newUserObj);
           localStorage.setItem('xmas_v3_demo_users', JSON.stringify(allUsers));
         } else {
-          await supabaseClient.from('family_users').insert([newUserObj]);
+          const { error } = await supabaseClient.from('family_users').insert([newUserObj]);
+          if (error && error.message && error.message.includes('avatar')) {
+            delete newUserObj.avatar;
+            await supabaseClient.from('family_users').insert([newUserObj]);
+          }
         }
       }
 
@@ -1152,7 +1293,7 @@
               <div class="flex flex-wrap gap-1.5 mt-1.5">
                 ${members.map(m => `
                   <span class="text-xs px-2.5 py-1 rounded-full font-semibold ${m === currentUser ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700'}">
-                    ${escapeHtml(m)}
+                    ${getUserEmoji(m)} ${escapeHtml(m)}
                   </span>
                 `).join('')}
               </div>
@@ -1256,7 +1397,6 @@
       if (!wish) return;
 
       const claimedBy = newStatus === 'available' ? null : currentUser;
-      // Ha lefoglalja vagy megveszi, eltároljuk, melyik csoportban tette!
       const claimedInGroup = newStatus === 'available'
         ? null
         : (wish.claimed_in_group || resolveTargetGroupForWish(wish.owner_name));
@@ -1283,7 +1423,6 @@
           .update({ status: newStatus, claimed_by: claimedBy, claimed_in_group: claimedInGroup })
           .eq('id', id);
 
-        // Ha a felhasználó még nem futtatta le az ALTER TABLE-t a Supabase-ben, ne akadjon el a gomb:
         if (error && error.message && error.message.includes('claimed_in_group')) {
           await supabaseClient
             .from('wishes')
@@ -1327,18 +1466,84 @@
       `).join('');
     }
 
+    // 1/B. RENDER: Papírhatású Bevásárlólistám (Lefoglalt és Megvett tételek oda-vissza szinkronnal)
+    function renderMyShoppingList() {
+      const container = document.getElementById('my-shopping-list-container');
+      const counterEl = document.getElementById('shopping-list-counter');
+      if (!container) return;
+
+      const myClaimedItems = allWishes.filter(w =>
+        w.claimed_by === currentUser &&
+        w.owner_name !== currentUser &&
+        (w.status === 'reserved' || w.status === 'bought')
+      );
+
+      myClaimedItems.sort((a, b) => (a.status === 'bought') - (b.status === 'bought'));
+
+      const boughtCount = myClaimedItems.filter(w => w.status === 'bought').length;
+      if (counterEl) {
+        counterEl.textContent = `${boughtCount} / ${myClaimedItems.length} beszerezve`;
+      }
+
+      if (myClaimedItems.length === 0) {
+        container.innerHTML = `
+          <div class="py-4 font-cursive text-xl sm:text-2xl text-amber-900/60 italic">
+            Még nem foglaltál le egyetlen ajándékot sem a Családi Táblákról... ✏️
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = myClaimedItems.map(item => {
+        const isBought = item.status === 'bought';
+        const groupName = item.claimed_in_group ? getGroupNameByCode(item.claimed_in_group) : 'Közös csoport';
+        const ownerEmoji = getUserEmoji(item.owner_name);
+
+        return `
+          <div class="flex items-start justify-between gap-3 py-1.5 group">
+            <label class="flex items-start gap-3 cursor-pointer select-none min-w-0 flex-1">
+              <input type="checkbox"
+                ${isBought ? 'checked' : ''}
+                onchange="toggleShoppingItemBought('${item.id}', this.checked)"
+                class="mt-1.5 w-5 h-5 rounded border-2 border-amber-800 text-emerald-700 focus:ring-emerald-600 accent-emerald-700 cursor-pointer shrink-0">
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-baseline gap-2 flex-wrap">
+                  <span class="font-cursive text-2xl sm:text-[26px] leading-snug font-bold transition ${isBought ? 'line-through text-emerald-900/50 decoration-emerald-700/70' : 'text-slate-900'}">
+                    ${escapeHtml(item.title)}
+                  </span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded-full ${isBought ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-200/80 text-amber-950'}">
+                    ${ownerEmoji} ${escapeHtml(item.owner_name)} részére (${escapeHtml(groupName)})
+                  </span>
+                  ${item.is_secret ? `<span class="text-[11px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-bold">🕵️ Titkos</span>` : ''}
+                </div>
+                ${item.note ? `<p class="font-cursive text-lg text-amber-900/80 leading-tight">„${escapeHtml(item.note)}”</p>` : ''}
+                ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="inline-block text-xs font-bold text-red-700 hover:underline mt-0.5">🔗 Bolti link megnyitása &rarr;</a>` : ''}
+              </div>
+            </label>
+
+            <button onclick="updateStatus('${item.id}', 'available')"
+              title="Foglalás feloldása (levétel a listámról)"
+              class="text-xs text-amber-900/40 hover:text-red-600 font-bold px-2 py-1 rounded transition shrink-0">
+              ✖ Levétel
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleShoppingItemBought(id, isChecked) {
+      const targetStatus = isChecked ? 'bought' : 'reserved';
+      await updateStatus(id, targetStatus);
+    }
+
     // Ellenőrzi, hogy egy megvett ajándék az adott csoport fája alá tartozik-e
     function doesWishBelongToGroupTree(wish, groupCode) {
       if (wish.status !== 'bought') return false;
 
-      // Ha van eltárolt csoportkód az ajándékon, CSAK abban a csoportban jelenik meg a fa alatt!
       if (wish.claimed_in_group) {
         return wish.claimed_in_group === groupCode;
       }
 
-      // Visszafelé kompatibilitás (korábban megvett ajándékokra, amiknél még nem volt claimed_in_group):
-      // Csak akkor számoljuk bele, ha a vásárló ÉS a megajándékozott is tagja ennek a csoportnak,
-      // és ez az első közös csoportjuk (hogy a régiek se duplikálódjanak minden fa alatt).
       const ownerObj = allUsers.find(u => u.username === wish.owner_name);
       const buyerObj = allUsers.find(u => u.username === wish.claimed_by);
       const ownerGroups = ownerObj?.groups || [];
@@ -1376,7 +1581,6 @@
         return;
       }
 
-      // Csoport választó gombok
       groupSelector.innerHTML = `
         <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
           🌟 Minden csoportom (${myGroupCodes.length})
@@ -1392,14 +1596,11 @@
         }).join('')}
       `;
 
-      // Aktuálisan kiválasztott csoport(ok) tagjai (saját magunkat kizárva)
       const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
       const visibleUsers = allUsers
         .filter(u => u.username !== currentUser && (u.groups || []).some(code => activeGroupCodes.includes(code)))
         .map(u => u.username);
 
-      // PONTOS AJÁNDÉKSZÁMLÁLÁS A FA ALATT:
-      // Csak azokat a megvett ajándékokat számoljuk, amiket KIFEJEZETTEN az éppen kiválasztott csoportban vettek meg!
       const boughtInCurrentGroup = allWishes.filter(w => {
         if (!visibleUsers.includes(w.owner_name) || w.status !== 'bought') return false;
         if (selectedGroupCode === 'ALL_MY_GROUPS') {
@@ -1410,14 +1611,13 @@
 
       updateRoomPresents(boughtInCurrentGroup);
 
-      // Személy szűrő gombok
       filtersContainer.innerHTML = `
         <button onclick="setPersonFilter('ALL')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedPersonFilter === 'ALL' ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
           Összes tag a körben (${visibleUsers.length})
         </button>
         ${visibleUsers.map(name => `
           <button onclick="setPersonFilter('${escapeHtml(name)}')" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition ${selectedPersonFilter === name ? 'bg-red-600 text-white shadow' : 'bg-white text-emerald-950 border border-emerald-800/20'}">
-            🦌 ${escapeHtml(name)}
+            ${getUserEmoji(name)} ${escapeHtml(name)}
           </button>
         `).join('')}
       `;
@@ -1435,7 +1635,6 @@
           .filter(c => myGroupCodes.includes(c))
           .map(c => (allGroups.find(g => g.code === c)?.name || c));
 
-        // Titkos meglepetéseknél csak azt mutassuk, amit az adott csoportban írtak fel
         const personWishes = allWishes.filter(w => {
           if (w.owner_name !== person) return false;
           if (w.is_secret && w.claimed_in_group && selectedGroupCode !== 'ALL_MY_GROUPS') {
@@ -1448,7 +1647,7 @@
           <div class="bg-white rounded-2xl shadow-md border-2 border-emerald-900/15 overflow-hidden w-full">
             <div class="bg-gradient-to-r from-emerald-900 to-green-800 text-white px-4 sm:px-5 py-3.5 flex flex-wrap justify-between items-center gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-8 h-8 shrink-0 rounded-xl bg-red-600 border border-red-400 text-white inline-flex items-center justify-center text-sm font-extrabold shadow-sm">${person.charAt(0).toUpperCase()}</span>
+                <span class="w-8 h-8 shrink-0 rounded-xl bg-red-600 border border-red-400 text-white inline-flex items-center justify-center text-base font-extrabold shadow-sm">${getUserEmoji(person)}</span>
                 <div class="min-w-0">
                   <h4 class="font-extrabold text-white leading-tight truncate">${escapeHtml(person)} kívánságtáblája</h4>
                   <p class="text-[11px] text-emerald-200 truncate">Közös csoport: ${sharedGroups.map(escapeHtml).join(', ')}</p>
