@@ -11,7 +11,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
+    /* --- PAPÍR HATÁSÚ BEVÁSÁRLÓLISTA --- */
+    .paper-notepad {
+      background-color: #fdfaf2;
+      background-image: repeating-linear-gradient(transparent, transparent 35px, #e6dec8 35px, #e6dec8 36px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(180, 160, 120, 0.35);
+      position: relative;
+    }
+    /* Piros függőleges margócsík a bal oldalon */
+    .paper-notepad::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 34px;
+      width: 2px;
+      background-color: rgba(220, 38, 38, 0.28);
+      pointer-events: none;
+    }
+    .font-cursive {
+      font-family: 'Caveat', cursive;
+    }
+
     html, body {
       max-width: 100%;
       overflow-x: hidden;
@@ -70,7 +93,6 @@
     .flip-card.is-flipped {
       transform: rotateY(180deg);
     }
-    /* Hogy az inaktív oldal sose nyújtsa meg a magasságot vagy szélességet mobilon */
     .flip-card:not(.is-flipped) .flip-back {
       height: 0;
       overflow: hidden;
@@ -107,7 +129,6 @@
       100% { opacity: 0.8; }
     }
 
-    /* Hóesés az ablakban */
     .snow-particle {
       animation: snowFall linear infinite;
     }
@@ -117,7 +138,6 @@
       100% { transform: translateY(240px) translateX(-4px); opacity: 0.2; }
     }
 
-    /* Égősorok (1-4 csoportok) */
     .xmas-light {
       transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
       opacity: 0.32;
@@ -130,7 +150,6 @@
       transform: scale(1.22);
     }
 
-    /* Ajándékdoboz felbukkanás */
     .present-box-anim {
       animation: popPresent 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
       opacity: 0;
@@ -142,39 +161,15 @@
       0% { opacity: 0; transform: scale(0); }
       100% { opacity: 1; transform: scale(1); }
     }
-
-    /* --- PAPÍR HATÁSÚ BEVÁSÁRLÓLISTA --- */
-    .paper-notepad {
-      background-color: #fdfaf2;
-      background-image: repeating-linear-gradient(transparent, transparent 35px, #e6dec8 35px, #e6dec8 36px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(180, 160, 120, 0.35);
-      position: relative;
-    }
-    /* Piros függőleges margócsík a bal oldalon */
-    .paper-notepad::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 34px;
-      width: 2px;
-      background-color: rgba(220, 38, 38, 0.28);
-      pointer-events: none;
-    }
-    .font-cursive {
-      font-family: 'Caveat', cursive;
-    }
   </style>
 </head>
 <body class="text-slate-800 pb-24 min-h-screen">
 
-  <!-- ================= BEÁLLÍTÁSOK / SUPABASE ================= -->
   <script>
     const SUPABASE_URL = "https://xxjrqdscbjdgznoagxjr.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_IziomCzF0wlgxBQOJgLV-Q_oyB5P6lE";
   </script>
 
-  <!-- ================= FEKTETETT CANDY CANE BETÖLTŐ KÉPERNYŐ ================= -->
   <div id="loader-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-emerald-950 via-green-950 to-red-950 text-white px-4">
     <div class="relative w-64 sm:w-72 h-28 flex items-center justify-center cane-glow">
       <svg viewBox="0 0 220 100" class="w-full h-full overflow-visible">
@@ -206,7 +201,6 @@
     </div>
   </div>
 
-  <!-- ================= FEJLÉC ================= -->
   <header class="w-full bg-gradient-to-r from-emerald-900 via-green-800 to-red-900 text-white shadow-xl border-b-4 border-red-600 sticky top-0 z-30">
     <div class="max-w-4xl mx-auto px-4 py-3.5 flex justify-between items-center gap-2">
       <div class="flex items-center space-x-3 min-w-0">
@@ -252,12 +246,12 @@
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1">Keresztneved / Beceneved</label>
           <input type="text" id="auth-username" required placeholder="pl. Levi, Anya, Nagymama..." 
-            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600 outline-none transition">
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-600 outline-none transition">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1">4 jegyű PIN kód</label>
           <input type="password" id="auth-pin" required pattern="[0-9]{4}" maxlength="4" inputmode="numeric" placeholder="••••" 
-            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none transition text-center text-xl tracking-widest font-bold text-red-700">
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-red-600 outline-none transition text-center text-xl tracking-widest font-bold text-red-700">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-emerald-900 mb-1.5">Válassz ünnepi karaktert (Emojit)</label>
@@ -274,13 +268,11 @@
     <!-- ================= 2. FŐ ALKALMAZÁS NÉZET ================= -->
     <div id="app-view" class="hidden fade-in w-full">
       
-      <!-- Visszaszámláló Szentestéig -->
       <div class="bg-white/90 backdrop-blur-sm border-2 border-red-600/20 text-center py-2.5 px-3 sm:px-4 rounded-2xl shadow-sm mb-4 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-xs sm:text-base text-emerald-950 font-extrabold">
         <span>🎁 Ajándékozásig hátralévő idő:</span>
         <span id="countdown-timer" class="text-red-600 tracking-wide font-extrabold">Számolás...</span>
       </div>
 
-      <!-- Fő Navigációs Fülek -->
       <div class="grid grid-cols-3 bg-emerald-950/90 p-1.5 rounded-2xl mb-6 shadow-md border border-emerald-800">
         <button onclick="switchTab('my-list')" id="tab-my-list" class="py-2.5 px-1.5 sm:px-2 text-xs sm:text-sm font-bold rounded-xl transition bg-red-600 text-white shadow">
           📝 Saját Listám
@@ -293,9 +285,7 @@
         </button>
       </div>
 
-      <!-- ======================================================== -->
-      <!-- A) SAJÁT KÍVÁNSÁGLISTÁM FÜL                              -->
-      <!-- ======================================================== -->
+      <!-- A) SAJÁT KÍVÁNSÁGLISTÁM FÜL -->
       <div id="section-my-list" class="space-y-6 w-full">
         <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-md border-2 border-emerald-800/10">
           <h3 class="font-extrabold text-emerald-950 mb-1 flex items-center gap-2 text-base">
@@ -319,7 +309,7 @@
                 <option value="low">💡 Csak egy tipp</option>
               </select>
             </div>
-            <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-emerald-700 to-green-800 hover:from-emerald-800 hover:to-green-900 text-white text-sm font-bold px-6 py-3 rounded-xl shadow transition">
+            <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-emerald-700 to-green-800 hover:from-emerald-800 text-white text-sm font-bold px-6 py-3 rounded-xl shadow transition">
               + Hozzáadás a saját listámhoz
             </button>
           </form>
@@ -332,36 +322,10 @@
           </div>
           <div id="my-wishes-container" class="space-y-3"></div>
         </div>
-
-        <!-- PAPÍR HATÁSÚ BEVÁSÁRLÓLISTÁM (Lefoglalt és megvett ajándékok másoknak) -->
-        <div class="pt-4">
-          <div class="paper-notepad rounded-2xl p-4 sm:p-6 pl-11 sm:pl-12 border border-amber-900/20">
-            <!-- Dekoratív cellux csík felül -->
-            <div class="w-24 h-5 bg-amber-200/60 border border-amber-300/50 mx-auto -mt-6 sm:-mt-8 mb-3 rotate-[-2deg] shadow-sm"></div>
-
-            <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
-              <h3 class="font-cursive text-2xl sm:text-3xl font-bold text-amber-950 tracking-wide">
-                🛒 Karácsonyi Bevásárlólistám
-              </h3>
-              <span id="shopping-list-counter" class="text-xs font-bold bg-amber-900/10 text-amber-950 px-2.5 py-1 rounded-full">
-                0 / 0 beszerezve
-              </span>
-            </div>
-            <p class="text-xs text-amber-900/75 mb-4">
-              Itt látod egyben, amiket mások listájáról lefoglaltál. Ha kipipálod, a csoportban automatikusan <b>Megvettem</b> státuszra vált (és bekerül a fa alá)!
-            </p>
-
-            <div id="my-shopping-list-container" class="space-y-1"></div>
-          </div>
-        </div>
       </div>
 
-      <!-- ======================================================== -->
-      <!-- B) CSALÁDI TÁBLÁK FÜL (CSOPORT SZŰRÉS + FLIP SZOBA)      -->
-      <!-- ======================================================== -->
+      <!-- B) CSALÁDI TÁBLÁK FÜL -->
       <div id="section-board" class="hidden space-y-4 w-full">
-        
-        <!-- 1. Csoport (Kör) Választó Sáv -->
         <div class="bg-gradient-to-r from-emerald-900 to-green-900 text-white p-4 sm:p-5 rounded-2xl shadow-md w-full overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5">
             <div>
@@ -375,34 +339,26 @@
           <div id="board-group-selector" class="flex flex-wrap gap-2"></div>
         </div>
 
-        <!-- 2. FLIP VÁLTÓ GOMB A CSOPORTVÁLASZTÓ ALATT -->
         <div class="flex justify-center w-full">
-          <button id="flip-toggle-btn" onclick="toggleRoomFlip()" class="w-full sm:w-auto justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-red-400/80 transition transform active:scale-95 flex items-center gap-2">
+          <button id="flip-toggle-btn" onclick="toggleRoomFlip()" class="w-full sm:w-auto justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-red-400/80 transition transform active:scale-95 flex items-center gap-2">
             🎁 Nézzük hány ajándék van a fa alatt?
           </button>
         </div>
 
-        <!-- 3. 3D FLIP KÁRTYA (ELŐLAP: TÁBLÁK, HÁTLAP: INTERAKTÍV KARÁCSONYI SZOBA) -->
         <div class="flip-scene w-full">
           <div id="board-flip-card" class="flip-card w-full">
-
-            <!-- ELŐLAP: Személyszűrő + Kívánságtáblák -->
             <div id="flip-front-content" class="flip-face flip-front w-full space-y-4">
               <div id="family-filters" class="flex flex-wrap gap-2"></div>
               <div id="board-container" class="space-y-5"></div>
             </div>
 
-            <!-- HÁTLAP: Gazdagon kidolgozott, világos és meleg Karácsonyi Nappali SVG -->
             <div id="flip-back-content" class="flip-face flip-back w-full">
               <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-900/40 bg-[#6e3f23] relative">
-                
-                <!-- Információs sáv a szoba tetején: melyik csoport fáját nézzük épp -->
                 <div class="bg-emerald-950/90 text-amber-200 text-xs sm:text-sm font-bold px-4 py-2.5 flex items-center justify-between border-b border-amber-800/50">
                   <span id="room-group-label">🎄 Kiválasztott csoport fája</span>
                   <span id="room-presents-counter" class="bg-red-700 text-white px-2.5 py-0.5 rounded-full text-xs font-extrabold">0 db ajándék</span>
                 </div>
 
-                <!-- Gazdag Vektoros Karácsonyi Nappali -->
                 <svg viewBox="0 0 900 540" class="w-full h-auto block">
                   <defs>
                     <pattern id="warm-wall-planks" width="45" height="400" patternUnits="userSpaceOnUse">
@@ -410,35 +366,29 @@
                       <line x1="0" y1="0" x2="0" y2="400" stroke="#4e2a15" stroke-width="2.5"/>
                       <rect x="2" y="0" width="12" height="400" fill="#764528" opacity="0.35"/>
                     </pattern>
-
                     <pattern id="chimney-planks" width="44" height="400" patternUnits="userSpaceOnUse">
                       <rect width="44" height="400" fill="#b96d38"/>
                       <line x1="0" y1="0" x2="0" y2="400" stroke="#8f4e22" stroke-width="2"/>
                       <rect x="4" y="0" width="14" height="400" fill="#c97d46" opacity="0.4"/>
                     </pattern>
-
                     <linearGradient id="warm-floor-grad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stop-color="#c87d44"/>
                       <stop offset="50%" stop-color="#b56932"/>
                       <stop offset="100%" stop-color="#965222"/>
                     </linearGradient>
-
                     <radialGradient id="hearth-warm-glow" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/>
                       <stop offset="55%" stop-color="#ea580c" stop-opacity="0.22"/>
                       <stop offset="100%" stop-color="#ea580c" stop-opacity="0"/>
                     </radialGradient>
-
                     <linearGradient id="night-sky-grad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stop-color="#0f2547"/>
                       <stop offset="65%" stop-color="#1e4976"/>
                       <stop offset="100%" stop-color="#3b6ea5"/>
                     </linearGradient>
-
                     <clipPath id="window-pane-clip">
                       <rect x="612" y="62" width="226" height="246" rx="3"/>
                     </clipPath>
-
                     <pattern id="gift-stripes-green" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
                       <rect width="10" height="10" fill="#15803d"/>
                       <rect width="5" height="10" fill="#22c55e"/>
@@ -448,8 +398,7 @@
                       <rect width="5" height="10" fill="#ef4444"/>
                     </pattern>
                   </defs>
-
-                  <!-- ================= 1. HÁTTÉRFAL ÉS PADLÓ ================= -->
+                  <!-- 1. HÁTTÉRFAL ÉS PADLÓ -->
                   <rect x="0" y="0" width="900" height="395" fill="url(#warm-wall-planks)"/>
                   <rect x="338" y="0" width="224" height="395" fill="url(#chimney-planks)" stroke="#4e2a15" stroke-width="3"/>
                   <rect x="0" y="384" width="900" height="14" fill="#432310" stroke="#2d1609" stroke-width="1.5"/>
@@ -466,8 +415,7 @@
                     <line x1="650" y1="398" x2="705" y2="540"/>
                     <line x1="780" y1="398" x2="860" y2="540"/>
                   </g>
-
-                  <!-- ================= 2. ABLAK ÉS HAVAS TÁJ ================= -->
+                  <!-- 2. ABLAK ÉS HAVAS TÁJ -->
                   <rect x="602" y="52" width="246" height="266" rx="4" fill="#7c4322" stroke="#432310" stroke-width="3"/>
                   <g clip-path="url(#window-pane-clip)">
                     <rect x="612" y="62" width="226" height="246" fill="url(#night-sky-grad)"/>
@@ -501,8 +449,7 @@
                   <rect x="720" y="60" width="10" height="250" fill="#7c4322" stroke="#432310" stroke-width="1.5"/>
                   <rect x="610" y="182" width="230" height="10" fill="#7c4322" stroke="#432310" stroke-width="1.5"/>
                   <rect x="595" y="312" width="260" height="12" rx="3" fill="#5c3016" stroke="#3b1d0b" stroke-width="1.5"/>
-
-                  <!-- ================= 3. SZŐNYEG A KANDALLÓ ELŐTT ================= -->
+                  <!-- 3. SZŐNYEG -->
                   <g transform="translate(450, 482)">
                     <ellipse cx="0" cy="0" rx="165" ry="42" fill="#991b1b" stroke="#7f1d1d" stroke-width="3"/>
                     <ellipse cx="0" cy="0" rx="132" ry="33" fill="#dc2626"/>
@@ -510,10 +457,8 @@
                     <ellipse cx="0" cy="0" rx="64" ry="15" fill="#fbbf24"/>
                     <ellipse cx="0" cy="0" rx="30" ry="7" fill="#991b1b"/>
                   </g>
-
-                  <!-- ================= 4. KANDALLÓ, KOSZORÚ, ZOKNIK ÉS ÉGŐ TŰZ ================= -->
+                  <!-- 4. KANDALLÓ -->
                   <circle cx="450" cy="365" r="150" fill="url(#hearth-warm-glow)" class="fire-ambient"/>
-
                   <g>
                     <line x1="450" y1="52" x2="412" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
                     <line x1="450" y1="52" x2="488" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
@@ -533,7 +478,6 @@
                     <path d="M 453 106 L 460 122 L 453 119 Z" fill="#b91c1c"/>
                     <circle cx="450" cy="105" r="4" fill="#ef4444"/>
                   </g>
-
                   <g>
                     <path d="M 335 222 Q 380 198 440 218 Q 500 198 565 222" fill="none" stroke="#14532d" stroke-width="14" stroke-linecap="round"/>
                     <path d="M 340 222 Q 390 202 450 220 Q 510 202 560 222" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" stroke-dasharray="12 8"/>
@@ -542,7 +486,6 @@
                     <path d="M 450 182 C 446 189 447 194 450 194 C 453 194 454 189 450 182 Z" fill="#f97316"/>
                     <rect x="436" y="216" width="28" height="5" rx="2" fill="#dc2626"/>
                   </g>
-
                   <rect x="330" y="236" width="240" height="168" fill="#b45b32" stroke="#5c2c16" stroke-width="2.5"/>
                   <g fill="#9a4421" opacity="0.75">
                     <rect x="336" y="244" width="38" height="14" rx="1"/>
@@ -573,27 +516,22 @@
                     <rect x="336" y="308" width="26" height="14" rx="1"/>
                     <rect x="524" y="330" width="36" height="14" rx="1"/>
                   </g>
-
                   <rect x="312" y="218" width="276" height="22" rx="4" fill="#6b381b" stroke="#3b1d0b" stroke-width="2.5"/>
                   <rect x="320" y="240" width="260" height="7" fill="#4e2710"/>
                   <path d="M 386 392 L 386 306 A 64 48 0 0 1 514 306 L 514 392 Z" fill="#2b1208" stroke="#4e2210" stroke-width="4"/>
                   <path d="M 396 392 L 396 312 A 54 40 0 0 1 504 312 L 504 392 Z" fill="#451a0a"/>
-
                   <g>
                     <path class="fire-outer" d="M 412 382 C 402 350 422 320 435 296 C 442 315 450 302 454 282 C 466 308 475 318 480 302 C 492 328 498 355 488 382 Z" fill="#ea580c"/>
                     <path class="fire-mid" d="M 422 382 C 415 355 430 332 442 312 C 448 328 455 310 460 298 C 470 322 484 350 478 382 Z" fill="#f97316"/>
                     <path class="fire-inner" d="M 432 382 C 428 362 440 342 450 324 C 460 342 472 362 468 382 Z" fill="#facc15"/>
                     <path class="fire-inner" d="M 442 382 C 440 368 446 355 450 345 C 454 355 460 368 458 382 Z" fill="#fef08a"/>
                   </g>
-
                   <g>
                     <rect x="415" y="374" width="70" height="12" rx="5" fill="#4e2611" transform="rotate(-6 450 380)"/>
                     <rect x="415" y="374" width="70" height="12" rx="5" fill="#3b1b0a" transform="rotate(7 450 380)"/>
                     <path d="M 408 384 L 492 384 M 420 376 L 414 392 M 480 376 L 486 392 M 450 376 L 450 392" stroke="#1c1917" stroke-width="3.5" stroke-linecap="round"/>
                   </g>
-
                   <rect x="318" y="392" width="264" height="18" rx="3" fill="#5c2c16" stroke="#3b1d0b" stroke-width="2"/>
-
                   <g transform="translate(362, 232) rotate(8)">
                     <path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
                     <path d="M 2 22 L 25 22 M 2 28 L 24 28" stroke="#fef08a" stroke-width="2.5"/>
@@ -613,8 +551,7 @@
                     <circle cx="8" cy="48" r="7" fill="#15803d"/>
                     <rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
                   </g>
-
-                  <!-- ================= 5. FOTEL ÉS PÁRNA ================= -->
+                  <!-- 5. FOTEL -->
                   <g>
                     <polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/>
                     <polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/>
@@ -626,8 +563,7 @@
                     <rect x="626" y="382" width="132" height="32" rx="8" fill="#298696" stroke="#113e47" stroke-width="2"/>
                     <rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/>
                   </g>
-
-                  <!-- ================= 6. TÖBBRÉTEGŰ KARÁCSONYFA ================= -->
+                  <!-- 6. KARÁCSONYFA -->
                   <g>
                     <rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/>
                     <path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/>
@@ -635,12 +571,10 @@
                     <path d="M 165 155 L 76 285 Q 102 300 125 285 Q 145 300 165 286 Q 185 300 205 285 Q 228 300 254 285 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/>
                     <path d="M 165 110 L 96 225 Q 118 238 136 225 Q 152 238 165 226 Q 178 238 194 225 Q 212 238 234 225 Z" fill="#1b9148" stroke="#136331" stroke-width="2"/>
                     <path d="M 165 72 L 116 168 Q 140 180 165 168 Q 190 180 214 168 Z" fill="#21a654" stroke="#157339" stroke-width="2"/>
-
                     <path d="M 122 155 Q 165 182 212 162" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4 4"/>
                     <path d="M 98 218 Q 165 252 232 224" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
                     <path d="M 78 282 Q 165 322 252 288" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
                     <path d="M 58 346 Q 165 392 270 352" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="5 5"/>
-
                     <circle cx="152" cy="135" r="7" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
                     <circle cx="185" cy="195" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
                     <circle cx="128" cy="202" r="7.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
@@ -652,14 +586,11 @@
                     <circle cx="88" cy="378" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
                     <circle cx="162" cy="382" r="9" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
                     <circle cx="235" cy="375" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-
                     <polygon points="165,36 173,56 195,56 177,69 184,90 165,77 146,90 153,69 135,56 157,56" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
                     <polygon points="165,45 170,58 184,58 173,66 177,79 165,71 153,79 157,66 146,58 160,58" fill="#fef08a"/>
                   </g>
-
-                  <!-- ================= 7. PLAFON ÉS FA ÉGŐSOROK (1-4 CSOPORTOK) ================= -->
+                  <!-- 7. ÉGŐSOROK -->
                   <path d="M 0 12 Q 150 42 300 10 Q 450 42 600 10 Q 750 42 900 12" fill="none" stroke="#2d1609" stroke-width="2.5"/>
-
                   <circle cx="38" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
                   <circle cx="92" cy="27" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/>
                   <circle cx="150" cy="30" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="2"/>
@@ -675,7 +606,6 @@
                   <circle cx="750" cy="30" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
                   <circle cx="808" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
                   <circle cx="862" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
-
                   <circle cx="165" cy="112" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="2"/>
                   <circle cx="138" cy="158" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="4"/>
                   <circle cx="192" cy="162" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
@@ -694,7 +624,7 @@
                   <circle cx="118" cy="395" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="3"/>
                   <circle cx="205" cy="395" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
 
-                  <!-- ================= 8. DINAMIKUS AJÁNDÉKDOBOZOK RÉTEGE (A FA ALATT) ================= -->
+                  <!-- 8. DINAMIKUS AJÁNDÉKDOBOZOK -->
                   <g id="svg-presents-layer"></g>
                 </svg>
 
@@ -703,12 +633,9 @@
 
           </div>
         </div>
-
       </div>
 
-      <!-- ======================================================== -->
-      <!-- C) CSOPORTOK (AJÁNDÉKOZÓ KÖRÖK) FÜL                      -->
-      <!-- ======================================================== -->
+      <!-- C) CSOPORTOK FÜL -->
       <div id="section-groups" class="hidden space-y-6 w-full">
         <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-xs sm:text-sm text-amber-950">
           <strong>🎄 Mire jók a csoportok?</strong> Létrehozhatsz külön csoportokat. A Táblákon mindenki csak azoknak a listáját látja, akikkel van közös csoportja – és minden megvett ajándék pontosan annak a csoportnak a fája alá kerül, ahol megvették!
@@ -805,9 +732,43 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIKA ================= -->
+  <!-- ================= BAL ALSÓ LEBEGŐ BEVÁSÁRLÓLISTA GOMB ================= -->
+  <button id="floating-shopping-btn" onclick="openShoppingModal()" title="Karácsonyi Bevásárlólistám megnyitása"
+    class="hidden fixed bottom-5 left-5 z-40 bg-gradient-to-br from-amber-100 to-[#fdfaf2] hover:from-white hover:to-amber-50 text-amber-950 border-2 border-amber-800/40 rounded-2xl p-3.5 shadow-2xl transition transform hover:scale-105 active:scale-95 flex items-center gap-2.5 group">
+    <span class="text-2xl">📝</span>
+    <span class="font-cursive text-xl font-bold pr-1 hidden sm:inline">Bevásárlólistám</span>
+    <span id="floating-shopping-badge" class="bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow">0</span>
+  </button>
+
+  <!-- ================= TELJES KÉPERNYŐS BEVÁSÁRLÓLISTA MODAL ================= -->
+  <div id="shopping-modal" onclick="closeShoppingModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4 sm:p-8">
+    <div class="w-full max-w-2xl flex justify-between items-center mb-3 px-1">
+      <button type="button" onclick="closeShoppingModal()"
+        class="bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 shadow-lg">
+        &larr; Vissza a menübe
+      </button>
+      <span class="text-xs text-amber-200/80 hidden sm:inline">Kattints bárhová a listán kívül a bezáráshoz</span>
+    </div>
+
+    <div onclick="event.stopPropagation()" class="paper-notepad w-full max-w-2xl max-h-[82vh] overflow-y-auto rounded-3xl p-5 sm:p-8 pl-12 sm:pl-14 border-2 border-amber-900/30 shadow-2xl fade-in">
+      <div class="w-28 h-6 bg-amber-200/60 border border-amber-300/50 mx-auto -mt-3 mb-4 rotate-[-2deg] shadow-sm"></div>
+
+      <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
+        <h3 class="font-cursive text-3xl sm:text-4xl font-bold text-amber-950 tracking-wide">
+          🛒 Karácsonyi Bevásárlólistám
+        </h3>
+        <span id="shopping-list-counter" class="text-xs sm:text-sm font-bold bg-amber-900/10 text-amber-950 px-3 py-1 rounded-full">
+          0 / 0 beszerezve
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-amber-900/75 mb-5">
+        Itt látod egyben, amiket mások listájáról lefoglaltál. Ha kipipálod, a csoportban automatikusan <b>Megvettem</b> státuszra vált (és bekerül a fa alá)!
+      </p>
+      <div id="my-shopping-list-container" class="space-y-1.5 pb-4"></div>
+    </div>
+  </div>
+
   <script>
-    // 1. Fektetett Candy Cane Betöltő Animáció
     function runCandyCaneLoader() {
       const overlay = document.getElementById('loader-overlay');
       const percentEl = document.getElementById('loader-percent');
@@ -827,7 +788,6 @@
     }
     window.addEventListener('DOMContentLoaded', runCandyCaneLoader);
 
-    // 2. Supabase / Demo Mód inicializálás
     const isDemoMode = !SUPABASE_URL || !SUPABASE_ANON_KEY;
     let supabaseClient = null;
     if (!isDemoMode) {
@@ -845,7 +805,6 @@
     let allGroups = [];
     let allWishes = [];
 
-    // Emojipedia Christmas hivatalos karácsonyi emoji készlet
     const CHRISTMAS_EMOJIS = [
       '🎅', '🤶', '🧑‍🎄', '🦌', '🎄', '🎁', '⛄', '☃️', '❄️', '🌟',
       '🔔', '🕯️', '🧦', '🍪', '🥛', '🍷', '🥂', '🍾', '🥧', '🍫',
@@ -960,7 +919,6 @@
       return found ? found.name : code;
     }
 
-    // Segédfüggvény: meghatározza, melyik csoportba könyveljük el a vásárlást/foglalást
     function resolveTargetGroupForWish(ownerName) {
       const myGroups = getCurrentUserObj().groups || [];
       const ownerObj = allUsers.find(u => u.username === ownerName);
@@ -993,7 +951,6 @@
       return myGroups[0] || null;
     }
 
-    // Belépés / Regisztráció
     async function handleAuth(e) {
       e.preventDefault();
       const usernameInput = document.getElementById('auth-username').value.trim();
@@ -1045,6 +1002,7 @@
       document.getElementById('auth-view').classList.add('hidden');
       document.getElementById('app-view').classList.remove('hidden');
       document.getElementById('user-controls').classList.remove('hidden');
+      document.getElementById('floating-shopping-btn').classList.remove('hidden');
       document.getElementById('current-user-display').textContent = currentUser;
       loadData();
     }
@@ -1055,6 +1013,8 @@
       document.getElementById('auth-view').classList.remove('hidden');
       document.getElementById('app-view').classList.add('hidden');
       document.getElementById('user-controls').classList.add('hidden');
+      document.getElementById('floating-shopping-btn').classList.add('hidden');
+      closeShoppingModal();
       document.getElementById('auth-pin').value = '';
     }
 
@@ -1074,7 +1034,6 @@
       loadData();
     }
 
-    // ================= 3D FLIP NÉZETVÁLTÁS (TÁBLÁK <-> KARÁCSONYI SZOBA) =================
     function toggleRoomFlip() {
       isRoomView = !isRoomView;
       const flipCard = document.getElementById('board-flip-card');
@@ -1092,7 +1051,6 @@
       }
     }
 
-    // ================= VEKTOROS AJÁNDÉKDOBOZOK A FA ALATT =================
     const PRESENT_SLOTS = [
       { x: 52,  y: 400, w: 48, h: 52, fill: 'url(#gift-stripes-green)', ribbon: '#dc2626' },
       { x: 108, y: 416, w: 62, h: 42, fill: '#dc2626', ribbon: '#facc15' },
@@ -1170,7 +1128,6 @@
       }
     }
 
-    // ================= ÉGŐSOROK RANDOM CSOPORTOS VILLOGTATÁSA (1-4) =================
     let lastLightGroup = 0;
     function startChristmasLights() {
       const triggerRandomGroup = () => {
@@ -1191,7 +1148,6 @@
     }
     window.addEventListener('DOMContentLoaded', startChristmasLights);
 
-    // ================= CSOPORT KEZELÉS LOGIKA =================
     async function createNewGroup(e) {
       e.preventDefault();
       const name = document.getElementById('new-group-name').value.trim();
@@ -1317,7 +1273,6 @@
       switchTab('board');
     }
 
-    // ================= KÍVÁNSÁGOK LOGIKA =================
     async function addWish(e, isSecret) {
       e.preventDefault();
       let newItem = {};
@@ -1439,7 +1394,6 @@
       return '<span class="text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold px-2 py-0.5 rounded-md">🌲 Örülne neki</span>';
     }
 
-    // 1. RENDER: Saját Lista
     function renderMyList() {
       const container = document.getElementById('my-wishes-container');
       const myItems = allWishes.filter(w => w.owner_name === currentUser && !w.is_secret && !w.deleted_by_owner);
@@ -1466,7 +1420,6 @@
       `).join('');
     }
 
-    // 1/B. RENDER: Papírhatású Bevásárlólistám (Lefoglalt és Megvett tételek oda-vissza szinkronnal)
     function renderMyShoppingList() {
       const container = document.getElementById('my-shopping-list-container');
       const counterEl = document.getElementById('shopping-list-counter');
@@ -1483,6 +1436,15 @@
       const boughtCount = myClaimedItems.filter(w => w.status === 'bought').length;
       if (counterEl) {
         counterEl.textContent = `${boughtCount} / ${myClaimedItems.length} beszerezve`;
+      }
+
+      const floatingBadge = document.getElementById('floating-shopping-badge');
+      if (floatingBadge) {
+        const remainingCount = myClaimedItems.length - boughtCount;
+        floatingBadge.textContent = `${remainingCount} db`;
+        floatingBadge.className = remainingCount > 0
+          ? "bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow"
+          : "bg-emerald-700 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow";
       }
 
       if (myClaimedItems.length === 0) {
@@ -1531,12 +1493,21 @@
       }).join('');
     }
 
+    function openShoppingModal() {
+      renderMyShoppingList();
+      document.getElementById('shopping-modal').classList.remove('hidden');
+    }
+
+    function closeShoppingModal() {
+      const modal = document.getElementById('shopping-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
     async function toggleShoppingItemBought(id, isChecked) {
       const targetStatus = isChecked ? 'bought' : 'reserved';
       await updateStatus(id, targetStatus);
     }
 
-    // Ellenőrzi, hogy egy megvett ajándék az adott csoport fája alá tartozik-e
     function doesWishBelongToGroupTree(wish, groupCode) {
       if (wish.status !== 'bought') return false;
 
@@ -1556,7 +1527,6 @@
       return ownerGroups[0] === groupCode;
     }
 
-    // 2. RENDER: Családi Táblák + Karácsonyi Szoba Ajándékainak Frissítése
     function renderBoard() {
       const groupSelector = document.getElementById('board-group-selector');
       const filtersContainer = document.getElementById('family-filters');
@@ -1779,7 +1749,6 @@
       return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
 
-    // ================= VISSZASZÁMLÁLÓ LOGIKA =================
     function updateCountdown() {
       const now = new Date().getTime();
       const currentYear = new Date().getFullYear();
