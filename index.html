@@ -83,12 +83,27 @@
     }
     @keyframes popPresent { 0% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
 
-    /* Ikon karácsonyfa villogás */
+    /* --- JAVÍTOTT: Ikon karácsonyfa villogás és gomb ugrás --- */
+    .icon-tree-light {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
     @keyframes iconBlink {
       0%, 100% { opacity: 0.3; transform: scale(1); filter: drop-shadow(0 0 1px transparent); }
-      50% { opacity: 1; transform: scale(1.35); filter: drop-shadow(0 0 6px currentColor); }
+      50% { opacity: 1; transform: scale(1.5); filter: drop-shadow(0 0 8px currentColor); }
     }
-    .icon-tree-light.blinking { animation: iconBlink 0.4s infinite alternate; }
+    .icon-tree-light.blinking { animation: iconBlink 0.3s infinite alternate; }
+
+    /* Maga a lebegő gomb is ugrik egyet örömében */
+    @keyframes buttonPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.25) rotate(-5deg); }
+      60% { transform: scale(1.15) rotate(5deg); }
+      100% { transform: scale(1); }
+    }
+    .btn-pop {
+      animation: buttonPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
   </style>
 </head>
 <body class="text-slate-800 pb-24 min-h-screen">
@@ -252,7 +267,7 @@
         </div>
       </div>
 
-      <!-- B) CSALÁDI TÁBLÁK FÜL -->
+      <!-- B) CSALÁDI TÁBLÁK FÜL (Kizárólag kártyák és szűrők) -->
       <div id="section-board" class="hidden space-y-4 w-full">
         
         <div class="bg-gradient-to-r from-emerald-900 to-green-900 text-white p-4 sm:p-5 rounded-2xl shadow-md w-full overflow-hidden">
@@ -483,10 +498,67 @@
         <g transform="translate(362, 232) rotate(8)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><path d="M 2 22 L 25 22 M 2 28 L 24 28" stroke="#fef08a" stroke-width="2.5"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
         <g transform="translate(436, 232) rotate(6)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><circle cx="13" cy="24" r="2" fill="#ffffff"/><circle cx="19" cy="30" r="2" fill="#ffffff"/><circle cx="9" cy="33" r="2" fill="#ffffff"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
         <g transform="translate(508, 232) rotate(8)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
-        <g><polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/><polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/><path d="M 622 280 Q 692 268 762 280 L 774 395 L 610 395 Z" fill="#1d6370" stroke="#113e47" stroke-width="2.5"/><path d="M 636 292 Q 692 282 748 292 L 754 385 L 630 385 Z" fill="#237685"/><rect x="646" y="328" width="52" height="48" rx="6" fill="#dc2626" stroke="#991b1b" stroke-width="2" transform="rotate(-4 672 352)"/><path d="M 598 355 Q 618 345 636 365 L 636 432 L 606 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/><path d="M 786 355 Q 766 345 748 365 L 748 432 L 778 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/><rect x="626" y="382" width="132" height="32" rx="8" fill="#298696" stroke="#113e47" stroke-width="2"/><rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/></g>
-        <g><rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/><path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/><path d="M 165 205 L 58 345 Q 88 362 115 344 Q 140 362 165 346 Q 190 362 215 344 Q 242 362 272 345 Z" fill="#146934" stroke="#0c4521" stroke-width="2"/><path d="M 165 155 L 76 285 Q 102 300 125 285 Q 145 300 165 286 Q 185 300 205 285 Q 228 300 254 285 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/><path d="M 165 110 L 96 225 Q 118 238 136 225 Q 152 238 165 226 Q 178 238 194 225 Q 212 238 234 225 Z" fill="#1b9148" stroke="#136331" stroke-width="2"/><path d="M 165 72 L 116 168 Q 140 180 165 168 Q 190 180 214 168 Z" fill="#21a654" stroke="#157339" stroke-width="2"/><path d="M 122 155 Q 165 182 212 162" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4 4"/><path d="M 98 218 Q 165 252 232 224" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/><path d="M 78 282 Q 165 322 252 288" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/><path d="M 58 346 Q 165 392 270 352" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="5 5"/><circle cx="152" cy="135" r="7" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="185" cy="195" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="128" cy="202" r="7.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="158" cy="255" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="212" cy="265" r="7.5" fill="#9333ea" stroke="#6b21a8" stroke-width="1.5"/><circle cx="108" cy="272" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="135" cy="325" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="192" cy="332" r="8.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="88" cy="378" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="162" cy="382" r="9" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="235" cy="375" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><polygon points="165,36 173,56 195,56 177,69 184,90 165,77 146,90 153,69 135,56 157,56" fill="#facc15" stroke="#ca8a04" stroke-width="2"/><polygon points="165,45 170,58 184,58 173,66 177,79 165,71 153,79 157,66 146,58 160,58" fill="#fef08a"/></g>
+        <!-- FOTEL -->
+        <g>
+          <polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/><polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/>
+          <path d="M 622 280 Q 692 268 762 280 L 774 395 L 610 395 Z" fill="#1d6370" stroke="#113e47" stroke-width="2.5"/>
+          <path d="M 636 292 Q 692 282 748 292 L 754 385 L 630 385 Z" fill="#237685"/>
+          <rect x="646" y="328" width="52" height="48" rx="6" fill="#dc2626" stroke="#991b1b" stroke-width="2" transform="rotate(-4 672 352)"/>
+          <path d="M 598 355 Q 618 345 636 365 L 636 432 L 606 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/>
+          <path d="M 786 355 Q 766 345 748 365 L 748 432 L 778 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/>
+          <rect x="626" y="382" width="132" height="32" rx="8" fill="#298696" stroke="#113e47" stroke-width="2"/>
+          <rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/>
+        </g>
+        <!-- KARÁCSONYFA -->
+        <g>
+          <rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/>
+          <path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/>
+          <path d="M 165 205 L 58 345 Q 88 362 115 344 Q 140 362 165 346 Q 190 362 215 344 Q 242 362 272 345 Z" fill="#146934" stroke="#0c4521" stroke-width="2"/>
+          <path d="M 165 155 L 76 285 Q 102 300 125 285 Q 145 300 165 286 Q 185 300 205 285 Q 228 300 254 285 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/>
+          <path d="M 165 110 L 96 225 Q 118 238 136 225 Q 152 238 165 226 Q 178 238 194 225 Q 212 238 234 225 Z" fill="#1b9148" stroke="#136331" stroke-width="2"/>
+          <path d="M 165 72 L 116 168 Q 140 180 165 168 Q 190 180 214 168 Z" fill="#21a654" stroke="#157339" stroke-width="2"/>
+          <path d="M 122 155 Q 165 182 212 162" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4 4"/>
+          <path d="M 98 218 Q 165 252 232 224" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
+          <path d="M 78 282 Q 165 322 252 288" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
+          <path d="M 58 346 Q 165 392 270 352" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="5 5"/>
+          <circle cx="152" cy="135" r="7" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="185" cy="195" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="128" cy="202" r="7.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="158" cy="255" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="212" cy="265" r="7.5" fill="#9333ea" stroke="#6b21a8" stroke-width="1.5"/><circle cx="108" cy="272" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="135" cy="325" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="192" cy="332" r="8.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="88" cy="378" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="162" cy="382" r="9" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="235" cy="375" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+          <polygon points="165,36 173,56 195,56 177,69 184,90 165,77 146,90 153,69 135,56 157,56" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+          <polygon points="165,45 170,58 184,58 173,66 177,79 165,71 153,79 157,66 146,58 160,58" fill="#fef08a"/>
+        </g>
         <!-- ÉGŐSOROK -->
-        <path d="M 0 12 Q 150 42 300 10 Q 450 42 600 10 Q 750 42 900 12" fill="none" stroke="#2d1609" stroke-width="2.5"/><circle cx="38" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/><circle cx="92" cy="27" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/><circle cx="150" cy="30" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="2"/><circle cx="210" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="4"/><circle cx="262" cy="19" r="6" fill="#f97316" style="color:#f97316" class="xmas-light" data-group="1"/><circle cx="342" cy="20" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="3"/><circle cx="395" cy="27" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/><circle cx="450" cy="30" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="505" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="1"/><circle cx="558" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/><circle cx="640" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="2"/><circle cx="695" cy="27" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="750" cy="30" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/><circle cx="808" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="862" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="165" cy="112" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="2"/><circle cx="138" cy="158" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="4"/><circle cx="192" cy="162" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/><circle cx="115" cy="212" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="3"/><circle cx="162" cy="218" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/><circle cx="212" cy="215" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/><circle cx="95" cy="278" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="142" cy="285" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/><circle cx="188" cy="282" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="235" cy="278" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="1"/><circle cx="75" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/><circle cx="122" cy="352" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="172" cy="348" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/><circle cx="218" cy="352" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="255" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="118" cy="395" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="3"/><circle cx="205" cy="395" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
+        <path d="M 0 12 Q 150 42 300 10 Q 450 42 600 10 Q 750 42 900 12" fill="none" stroke="#2d1609" stroke-width="2.5"/>
+        <circle cx="38" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
+        <circle cx="92" cy="27" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/>
+        <circle cx="150" cy="30" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="2"/>
+        <circle cx="210" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="4"/>
+        <circle cx="262" cy="19" r="6" fill="#f97316" style="color:#f97316" class="xmas-light" data-group="1"/>
+        <circle cx="342" cy="20" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="3"/>
+        <circle cx="395" cy="27" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/>
+        <circle cx="450" cy="30" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
+        <circle cx="505" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="1"/>
+        <circle cx="558" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/>
+        <circle cx="640" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="2"/>
+        <circle cx="695" cy="27" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
+        <circle cx="750" cy="30" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
+        <circle cx="808" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
+        <circle cx="862" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
+        <circle cx="165" cy="112" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="2"/>
+        <circle cx="138" cy="158" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="4"/>
+        <circle cx="192" cy="162" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
+        <circle cx="115" cy="212" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="3"/>
+        <circle cx="162" cy="218" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/>
+        <circle cx="212" cy="215" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/>
+        <circle cx="95" cy="278" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
+        <circle cx="142" cy="285" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/>
+        <circle cx="188" cy="282" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
+        <circle cx="235" cy="278" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="1"/>
+        <circle cx="75" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/>
+        <circle cx="122" cy="352" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
+        <circle cx="172" cy="348" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/>
+        <circle cx="218" cy="352" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
+        <circle cx="255" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
+        <circle cx="118" cy="395" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="3"/>
+        <circle cx="205" cy="395" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
         
         <!-- DINAMIKUS AJÁNDÉKDOBOZOK -->
         <g id="svg-presents-layer"></g>
@@ -892,6 +964,12 @@
       setTimeout(() => {
         lights.forEach(l => l.classList.remove('blinking'));
       }, 3500);
+
+      const treeBtn = document.getElementById('floating-tree-btn');
+      if (treeBtn) {
+        treeBtn.classList.add('btn-pop');
+        setTimeout(() => treeBtn.classList.remove('btn-pop'), 600);
+      }
     }
 
     async function createNewGroup(e) {
