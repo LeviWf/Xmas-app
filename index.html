@@ -20,7 +20,6 @@
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(180, 160, 120, 0.35);
       position: relative;
     }
-    /* Piros függőleges margócsík a bal oldalon */
     .paper-notepad::before {
       content: '';
       position: absolute;
@@ -49,89 +48,23 @@
     .fade-in { animation: fadeIn 0.3s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Fektetett Candy Cane Betöltő Animáció (Balról Jobbra) */
-    #loader-overlay {
-      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-    }
-    .candy-fill-rect {
-      animation: fillRightCandy 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-    @keyframes fillRightCandy {
-      0% { width: 0px; }
-      100% { width: 220px; }
-    }
-    .cane-glow {
-      filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.45));
-    }
-
-    /* --- 3D FLIP ANIMÁCIÓ (Mobilon is 100%-ig stabil pozícióval) --- */
-    .flip-scene {
-      perspective: 1600px;
-      width: 100%;
-      max-width: 100%;
-    }
-    .flip-card {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      width: 100%;
-      max-width: 100%;
-      transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
-      transform-style: preserve-3d;
-      transform-origin: center top;
-    }
-    .flip-face {
-      grid-area: 1 / 1 / 2 / 2;
-      width: 100%;
-      min-width: 0;
-      max-width: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .flip-back {
-      transform: rotateY(180deg);
-    }
-    .flip-card.is-flipped {
-      transform: rotateY(180deg);
-    }
-    .flip-card:not(.is-flipped) .flip-back {
-      height: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-    .flip-card.is-flipped .flip-front {
-      height: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
+    #loader-overlay { transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+    .candy-fill-rect { animation: fillRightCandy 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    @keyframes fillRightCandy { 0% { width: 0px; } 100% { width: 220px; } }
+    .cane-glow { filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.45)); }
 
     /* --- KARÁCSONYI SZOBA ANIMÁCIÓK --- */
-    .fire-outer {
-      animation: flameDance 1.1s infinite alternate ease-in-out;
-      transform-origin: 450px 380px;
-    }
-    .fire-mid {
-      animation: flameDance 0.85s infinite alternate-reverse ease-in-out;
-      transform-origin: 450px 380px;
-    }
-    .fire-inner {
-      animation: flameDance 0.65s infinite alternate ease-in-out;
-      transform-origin: 450px 380px;
-    }
-    .fire-ambient {
-      animation: glowPulse 1.8s infinite alternate ease-in-out;
-    }
+    .fire-outer { animation: flameDance 1.1s infinite alternate ease-in-out; transform-origin: 450px 380px; }
+    .fire-mid { animation: flameDance 0.85s infinite alternate-reverse ease-in-out; transform-origin: 450px 380px; }
+    .fire-inner { animation: flameDance 0.65s infinite alternate ease-in-out; transform-origin: 450px 380px; }
+    .fire-ambient { animation: glowPulse 1.8s infinite alternate ease-in-out; }
     @keyframes flameDance {
       0% { transform: scaleX(0.94) scaleY(0.95) skewX(-3deg); }
       100% { transform: scaleX(1.06) scaleY(1.06) skewX(3deg); }
     }
-    @keyframes glowPulse {
-      0% { opacity: 0.45; }
-      100% { opacity: 0.8; }
-    }
+    @keyframes glowPulse { 0% { opacity: 0.45; } 100% { opacity: 0.8; } }
 
-    .snow-particle {
-      animation: snowFall linear infinite;
-    }
+    .snow-particle { animation: snowFall linear infinite; }
     @keyframes snowFall {
       0% { transform: translateY(-15px) translateX(0px); opacity: 0.95; }
       50% { transform: translateY(115px) translateX(6px); opacity: 0.85; }
@@ -140,27 +73,22 @@
 
     .xmas-light {
       transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
-      opacity: 0.32;
-      transform-box: fill-box;
-      transform-origin: center;
+      opacity: 0.32; transform-box: fill-box; transform-origin: center;
     }
-    .xmas-light.on {
-      opacity: 1;
-      filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 3px #ffffff);
-      transform: scale(1.22);
-    }
+    .xmas-light.on { opacity: 1; filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 3px #ffffff); transform: scale(1.22); }
 
     .present-box-anim {
       animation: popPresent 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      opacity: 0;
-      transform: scale(0);
-      transform-box: fill-box;
-      transform-origin: bottom center;
+      opacity: 0; transform: scale(0); transform-box: fill-box; transform-origin: bottom center;
     }
-    @keyframes popPresent {
-      0% { opacity: 0; transform: scale(0); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes popPresent { 0% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
+
+    /* Ikon karácsonyfa villogás */
+    @keyframes iconBlink {
+      0%, 100% { opacity: 0.3; transform: scale(1); filter: drop-shadow(0 0 1px transparent); }
+      50% { opacity: 1; transform: scale(1.35); filter: drop-shadow(0 0 6px currentColor); }
     }
+    .icon-tree-light.blinking { animation: iconBlink 0.4s infinite alternate; }
   </style>
 </head>
 <body class="text-slate-800 pb-24 min-h-screen">
@@ -259,7 +187,7 @@
           <div id="auth-emoji-grid" class="grid grid-cols-6 gap-1.5 p-2.5 bg-slate-50 rounded-xl border border-slate-200 max-h-36 overflow-y-auto"></div>
         </div>
         <div id="auth-error" class="text-sm text-red-700 bg-red-50 border border-red-200 p-3 rounded-xl hidden font-medium"></div>
-        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
+        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">
           🎄 Belépés az Ünnepi Listába →
         </button>
       </form>
@@ -326,6 +254,7 @@
 
       <!-- B) CSALÁDI TÁBLÁK FÜL -->
       <div id="section-board" class="hidden space-y-4 w-full">
+        
         <div class="bg-gradient-to-r from-emerald-900 to-green-900 text-white p-4 sm:p-5 rounded-2xl shadow-md w-full overflow-hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5">
             <div>
@@ -339,300 +268,8 @@
           <div id="board-group-selector" class="flex flex-wrap gap-2"></div>
         </div>
 
-        <div class="flex justify-center w-full">
-          <button id="flip-toggle-btn" onclick="toggleRoomFlip()" class="w-full sm:w-auto justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-red-400/80 transition transform active:scale-95 flex items-center gap-2">
-            🎁 Nézzük hány ajándék van a fa alatt?
-          </button>
-        </div>
-
-        <div class="flip-scene w-full">
-          <div id="board-flip-card" class="flip-card w-full">
-            <div id="flip-front-content" class="flip-face flip-front w-full space-y-4">
-              <div id="family-filters" class="flex flex-wrap gap-2"></div>
-              <div id="board-container" class="space-y-5"></div>
-            </div>
-
-            <div id="flip-back-content" class="flip-face flip-back w-full">
-              <div class="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-900/40 bg-[#6e3f23] relative">
-                <div class="bg-emerald-950/90 text-amber-200 text-xs sm:text-sm font-bold px-4 py-2.5 flex items-center justify-between border-b border-amber-800/50">
-                  <span id="room-group-label">🎄 Kiválasztott csoport fája</span>
-                  <span id="room-presents-counter" class="bg-red-700 text-white px-2.5 py-0.5 rounded-full text-xs font-extrabold">0 db ajándék</span>
-                </div>
-
-                <svg viewBox="0 0 900 540" class="w-full h-auto block">
-                  <defs>
-                    <pattern id="warm-wall-planks" width="45" height="400" patternUnits="userSpaceOnUse">
-                      <rect width="45" height="400" fill="#6b3d22"/>
-                      <line x1="0" y1="0" x2="0" y2="400" stroke="#4e2a15" stroke-width="2.5"/>
-                      <rect x="2" y="0" width="12" height="400" fill="#764528" opacity="0.35"/>
-                    </pattern>
-                    <pattern id="chimney-planks" width="44" height="400" patternUnits="userSpaceOnUse">
-                      <rect width="44" height="400" fill="#b96d38"/>
-                      <line x1="0" y1="0" x2="0" y2="400" stroke="#8f4e22" stroke-width="2"/>
-                      <rect x="4" y="0" width="14" height="400" fill="#c97d46" opacity="0.4"/>
-                    </pattern>
-                    <linearGradient id="warm-floor-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#c87d44"/>
-                      <stop offset="50%" stop-color="#b56932"/>
-                      <stop offset="100%" stop-color="#965222"/>
-                    </linearGradient>
-                    <radialGradient id="hearth-warm-glow" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/>
-                      <stop offset="55%" stop-color="#ea580c" stop-opacity="0.22"/>
-                      <stop offset="100%" stop-color="#ea580c" stop-opacity="0"/>
-                    </radialGradient>
-                    <linearGradient id="night-sky-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#0f2547"/>
-                      <stop offset="65%" stop-color="#1e4976"/>
-                      <stop offset="100%" stop-color="#3b6ea5"/>
-                    </linearGradient>
-                    <clipPath id="window-pane-clip">
-                      <rect x="612" y="62" width="226" height="246" rx="3"/>
-                    </clipPath>
-                    <pattern id="gift-stripes-green" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                      <rect width="10" height="10" fill="#15803d"/>
-                      <rect width="5" height="10" fill="#22c55e"/>
-                    </pattern>
-                    <pattern id="gift-stripes-red" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                      <rect width="10" height="10" fill="#b91c1c"/>
-                      <rect width="5" height="10" fill="#ef4444"/>
-                    </pattern>
-                  </defs>
-                  <!-- 1. HÁTTÉRFAL ÉS PADLÓ -->
-                  <rect x="0" y="0" width="900" height="395" fill="url(#warm-wall-planks)"/>
-                  <rect x="338" y="0" width="224" height="395" fill="url(#chimney-planks)" stroke="#4e2a15" stroke-width="3"/>
-                  <rect x="0" y="384" width="900" height="14" fill="#432310" stroke="#2d1609" stroke-width="1.5"/>
-                  <rect x="0" y="398" width="900" height="142" fill="url(#warm-floor-grad)"/>
-                  <g stroke="#7c4219" stroke-width="1.8" opacity="0.65">
-                    <line x1="0" y1="422" x2="900" y2="422"/>
-                    <line x1="0" y1="450" x2="900" y2="450"/>
-                    <line x1="0" y1="484" x2="900" y2="484"/>
-                    <line x1="0" y1="522" x2="900" y2="522"/>
-                    <line x1="120" y1="398" x2="40" y2="540"/>
-                    <line x1="250" y1="398" x2="195" y2="540"/>
-                    <line x1="380" y1="398" x2="355" y2="540"/>
-                    <line x1="520" y1="398" x2="545" y2="540"/>
-                    <line x1="650" y1="398" x2="705" y2="540"/>
-                    <line x1="780" y1="398" x2="860" y2="540"/>
-                  </g>
-                  <!-- 2. ABLAK ÉS HAVAS TÁJ -->
-                  <rect x="602" y="52" width="246" height="266" rx="4" fill="#7c4322" stroke="#432310" stroke-width="3"/>
-                  <g clip-path="url(#window-pane-clip)">
-                    <rect x="612" y="62" width="226" height="246" fill="url(#night-sky-grad)"/>
-                    <circle cx="795" cy="98" r="16" fill="#fef9c3" opacity="0.85"/>
-                    <path d="M 605 255 Q 665 200 735 235 T 845 215 L 845 315 L 605 315 Z" fill="#93c5fd" opacity="0.45"/>
-                    <path d="M 605 275 Q 690 230 760 258 T 845 250 L 845 315 L 605 315 Z" fill="#e2e8f0"/>
-                    <g fill="#1e3a5f">
-                      <polygon points="645,210 628,255 662,255"/>
-                      <polygon points="645,192 632,228 658,228"/>
-                      <polygon points="790,195 772,248 808,248"/>
-                      <polygon points="790,175 776,215 804,215"/>
-                    </g>
-                    <polygon points="645,192 636,212 654,212" fill="#f8fafc" opacity="0.85"/>
-                    <polygon points="790,175 780,198 800,198" fill="#f8fafc" opacity="0.85"/>
-                    <path d="M 605 288 Q 665 268 730 285 T 845 278 L 845 315 L 605 315 Z" fill="#ffffff"/>
-                    <path d="M 612 182 Q 640 172 670 180 Q 698 174 723 182 L 723 186 L 612 186 Z" fill="#ffffff" opacity="0.95"/>
-                    <path d="M 727 182 Q 758 173 788 181 Q 815 174 838 182 L 838 186 L 727 186 Z" fill="#ffffff" opacity="0.95"/>
-                    <path d="M 612 302 Q 660 290 723 302 Z" fill="#ffffff"/>
-                    <path d="M 727 302 Q 785 290 838 302 Z" fill="#ffffff"/>
-                    <g fill="#ffffff">
-                      <circle cx="635" cy="70" r="2.8" class="snow-particle" style="animation-duration: 4.2s; animation-delay: 0s;"/>
-                      <circle cx="670" cy="65" r="2" class="snow-particle" style="animation-duration: 5.1s; animation-delay: 1.1s;"/>
-                      <circle cx="705" cy="75" r="3.2" class="snow-particle" style="animation-duration: 3.8s; animation-delay: 0.4s;"/>
-                      <circle cx="745" cy="68" r="2.2" class="snow-particle" style="animation-duration: 4.7s; animation-delay: 1.9s;"/>
-                      <circle cx="780" cy="72" r="3" class="snow-particle" style="animation-duration: 3.6s; animation-delay: 0.7s;"/>
-                      <circle cx="818" cy="66" r="2.4" class="snow-particle" style="animation-duration: 4.9s; animation-delay: 2.3s;"/>
-                      <circle cx="652" cy="110" r="2.5" class="snow-particle" style="animation-duration: 4.4s; animation-delay: 2.7s;"/>
-                      <circle cx="762" cy="115" r="2.8" class="snow-particle" style="animation-duration: 3.9s; animation-delay: 1.4s;"/>
-                    </g>
-                  </g>
-                  <rect x="720" y="60" width="10" height="250" fill="#7c4322" stroke="#432310" stroke-width="1.5"/>
-                  <rect x="610" y="182" width="230" height="10" fill="#7c4322" stroke="#432310" stroke-width="1.5"/>
-                  <rect x="595" y="312" width="260" height="12" rx="3" fill="#5c3016" stroke="#3b1d0b" stroke-width="1.5"/>
-                  <!-- 3. SZŐNYEG -->
-                  <g transform="translate(450, 482)">
-                    <ellipse cx="0" cy="0" rx="165" ry="42" fill="#991b1b" stroke="#7f1d1d" stroke-width="3"/>
-                    <ellipse cx="0" cy="0" rx="132" ry="33" fill="#dc2626"/>
-                    <ellipse cx="0" cy="0" rx="98" ry="24" fill="#ea580c"/>
-                    <ellipse cx="0" cy="0" rx="64" ry="15" fill="#fbbf24"/>
-                    <ellipse cx="0" cy="0" rx="30" ry="7" fill="#991b1b"/>
-                  </g>
-                  <!-- 4. KANDALLÓ -->
-                  <circle cx="450" cy="365" r="150" fill="url(#hearth-warm-glow)" class="fire-ambient"/>
-                  <g>
-                    <line x1="450" y1="52" x2="412" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
-                    <line x1="450" y1="52" x2="488" y2="78" stroke="#3b1d0b" stroke-width="2.5"/>
-                    <circle cx="450" cy="52" r="3.5" fill="#fbbf24"/>
-                    <rect x="392" y="76" width="116" height="104" rx="3" fill="#5c3016" stroke="#3b1d0b" stroke-width="2.5"/>
-                    <rect x="400" y="84" width="100" height="88" fill="#f8fafc"/>
-                    <circle cx="450" cy="130" r="27" fill="none" stroke="#15803d" stroke-width="14"/>
-                    <circle cx="450" cy="130" r="27" fill="none" stroke="#16a34a" stroke-width="8" stroke-dasharray="10 6"/>
-                    <circle cx="430" cy="118" r="3" fill="#dc2626"/>
-                    <circle cx="470" cy="120" r="3" fill="#dc2626"/>
-                    <circle cx="428" cy="142" r="3" fill="#dc2626"/>
-                    <circle cx="468" cy="144" r="3" fill="#dc2626"/>
-                    <circle cx="450" cy="156" r="3" fill="#facc15"/>
-                    <path d="M 450 103 C 436 92 428 105 446 108 Z" fill="#dc2626"/>
-                    <path d="M 450 103 C 464 92 472 105 454 108 Z" fill="#dc2626"/>
-                    <path d="M 447 106 L 440 122 L 447 119 Z" fill="#b91c1c"/>
-                    <path d="M 453 106 L 460 122 L 453 119 Z" fill="#b91c1c"/>
-                    <circle cx="450" cy="105" r="4" fill="#ef4444"/>
-                  </g>
-                  <g>
-                    <path d="M 335 222 Q 380 198 440 218 Q 500 198 565 222" fill="none" stroke="#14532d" stroke-width="14" stroke-linecap="round"/>
-                    <path d="M 340 222 Q 390 202 450 220 Q 510 202 560 222" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" stroke-dasharray="12 8"/>
-                    <circle cx="450" cy="198" r="20" fill="#fbbf24" opacity="0.28"/>
-                    <rect x="443" y="194" width="14" height="24" rx="2" fill="#fef08a"/>
-                    <path d="M 450 182 C 446 189 447 194 450 194 C 453 194 454 189 450 182 Z" fill="#f97316"/>
-                    <rect x="436" y="216" width="28" height="5" rx="2" fill="#dc2626"/>
-                  </g>
-                  <rect x="330" y="236" width="240" height="168" fill="#b45b32" stroke="#5c2c16" stroke-width="2.5"/>
-                  <g fill="#9a4421" opacity="0.75">
-                    <rect x="336" y="244" width="38" height="14" rx="1"/>
-                    <rect x="382" y="244" width="42" height="14" rx="1"/>
-                    <rect x="478" y="244" width="42" height="14" rx="1"/>
-                    <rect x="526" y="244" width="38" height="14" rx="1"/>
-                    <rect x="334" y="264" width="26" height="14" rx="1"/>
-                    <rect x="366" y="264" width="38" height="14" rx="1"/>
-                    <rect x="500" y="264" width="38" height="14" rx="1"/>
-                    <rect x="544" y="264" width="22" height="14" rx="1"/>
-                    <rect x="336" y="286" width="40" height="14" rx="1"/>
-                    <rect x="524" y="286" width="40" height="14" rx="1"/>
-                    <rect x="334" y="308" width="28" height="14" rx="1"/>
-                    <rect x="368" y="308" width="22" height="14" rx="1"/>
-                    <rect x="510" y="308" width="22" height="14" rx="1"/>
-                    <rect x="538" y="308" width="28" height="14" rx="1"/>
-                    <rect x="336" y="330" width="42" height="14" rx="1"/>
-                    <rect x="522" y="330" width="42" height="14" rx="1"/>
-                    <rect x="334" y="352" width="26" height="14" rx="1"/>
-                    <rect x="366" y="352" width="24" height="14" rx="1"/>
-                    <rect x="512" y="352" width="24" height="14" rx="1"/>
-                    <rect x="542" y="352" width="24" height="14" rx="1"/>
-                    <rect x="336" y="374" width="40" height="14" rx="1"/>
-                    <rect x="524" y="374" width="40" height="14" rx="1"/>
-                  </g>
-                  <g fill="#d48055" opacity="0.65">
-                    <rect x="432" y="244" width="38" height="14" rx="1"/>
-                    <rect x="336" y="308" width="26" height="14" rx="1"/>
-                    <rect x="524" y="330" width="36" height="14" rx="1"/>
-                  </g>
-                  <rect x="312" y="218" width="276" height="22" rx="4" fill="#6b381b" stroke="#3b1d0b" stroke-width="2.5"/>
-                  <rect x="320" y="240" width="260" height="7" fill="#4e2710"/>
-                  <path d="M 386 392 L 386 306 A 64 48 0 0 1 514 306 L 514 392 Z" fill="#2b1208" stroke="#4e2210" stroke-width="4"/>
-                  <path d="M 396 392 L 396 312 A 54 40 0 0 1 504 312 L 504 392 Z" fill="#451a0a"/>
-                  <g>
-                    <path class="fire-outer" d="M 412 382 C 402 350 422 320 435 296 C 442 315 450 302 454 282 C 466 308 475 318 480 302 C 492 328 498 355 488 382 Z" fill="#ea580c"/>
-                    <path class="fire-mid" d="M 422 382 C 415 355 430 332 442 312 C 448 328 455 310 460 298 C 470 322 484 350 478 382 Z" fill="#f97316"/>
-                    <path class="fire-inner" d="M 432 382 C 428 362 440 342 450 324 C 460 342 472 362 468 382 Z" fill="#facc15"/>
-                    <path class="fire-inner" d="M 442 382 C 440 368 446 355 450 345 C 454 355 460 368 458 382 Z" fill="#fef08a"/>
-                  </g>
-                  <g>
-                    <rect x="415" y="374" width="70" height="12" rx="5" fill="#4e2611" transform="rotate(-6 450 380)"/>
-                    <rect x="415" y="374" width="70" height="12" rx="5" fill="#3b1b0a" transform="rotate(7 450 380)"/>
-                    <path d="M 408 384 L 492 384 M 420 376 L 414 392 M 480 376 L 486 392 M 450 376 L 450 392" stroke="#1c1917" stroke-width="3.5" stroke-linecap="round"/>
-                  </g>
-                  <rect x="318" y="392" width="264" height="18" rx="3" fill="#5c2c16" stroke="#3b1d0b" stroke-width="2"/>
-                  <g transform="translate(362, 232) rotate(8)">
-                    <path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
-                    <path d="M 2 22 L 25 22 M 2 28 L 24 28" stroke="#fef08a" stroke-width="2.5"/>
-                    <circle cx="8" cy="48" r="7" fill="#15803d"/>
-                    <rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-                  </g>
-                  <g transform="translate(436, 232) rotate(6)">
-                    <path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
-                    <circle cx="13" cy="24" r="2" fill="#ffffff"/>
-                    <circle cx="19" cy="30" r="2" fill="#ffffff"/>
-                    <circle cx="9" cy="33" r="2" fill="#ffffff"/>
-                    <circle cx="8" cy="48" r="7" fill="#15803d"/>
-                    <rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-                  </g>
-                  <g transform="translate(508, 232) rotate(8)">
-                    <path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
-                    <circle cx="8" cy="48" r="7" fill="#15803d"/>
-                    <rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-                  </g>
-                  <!-- 5. FOTEL -->
-                  <g>
-                    <polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/>
-                    <polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/>
-                    <path d="M 622 280 Q 692 268 762 280 L 774 395 L 610 395 Z" fill="#1d6370" stroke="#113e47" stroke-width="2.5"/>
-                    <path d="M 636 292 Q 692 282 748 292 L 754 385 L 630 385 Z" fill="#237685"/>
-                    <rect x="646" y="328" width="52" height="48" rx="6" fill="#dc2626" stroke="#991b1b" stroke-width="2" transform="rotate(-4 672 352)"/>
-                    <path d="M 598 355 Q 618 345 636 365 L 636 432 L 606 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/>
-                    <path d="M 786 355 Q 766 345 748 365 L 748 432 L 778 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/>
-                    <rect x="626" y="382" width="132" height="32" rx="8" fill="#298696" stroke="#113e47" stroke-width="2"/>
-                    <rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/>
-                  </g>
-                  <!-- 6. KARÁCSONYFA -->
-                  <g>
-                    <rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/>
-                    <path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/>
-                    <path d="M 165 205 L 58 345 Q 88 362 115 344 Q 140 362 165 346 Q 190 362 215 344 Q 242 362 272 345 Z" fill="#146934" stroke="#0c4521" stroke-width="2"/>
-                    <path d="M 165 155 L 76 285 Q 102 300 125 285 Q 145 300 165 286 Q 185 300 205 285 Q 228 300 254 285 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/>
-                    <path d="M 165 110 L 96 225 Q 118 238 136 225 Q 152 238 165 226 Q 178 238 194 225 Q 212 238 234 225 Z" fill="#1b9148" stroke="#136331" stroke-width="2"/>
-                    <path d="M 165 72 L 116 168 Q 140 180 165 168 Q 190 180 214 168 Z" fill="#21a654" stroke="#157339" stroke-width="2"/>
-                    <path d="M 122 155 Q 165 182 212 162" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4 4"/>
-                    <path d="M 98 218 Q 165 252 232 224" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
-                    <path d="M 78 282 Q 165 322 252 288" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/>
-                    <path d="M 58 346 Q 165 392 270 352" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="5 5"/>
-                    <circle cx="152" cy="135" r="7" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-                    <circle cx="185" cy="195" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
-                    <circle cx="128" cy="202" r="7.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
-                    <circle cx="158" cy="255" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-                    <circle cx="212" cy="265" r="7.5" fill="#9333ea" stroke="#6b21a8" stroke-width="1.5"/>
-                    <circle cx="108" cy="272" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
-                    <circle cx="135" cy="325" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-                    <circle cx="192" cy="332" r="8.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
-                    <circle cx="88" cy="378" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-                    <circle cx="162" cy="382" r="9" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
-                    <circle cx="235" cy="375" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
-                    <polygon points="165,36 173,56 195,56 177,69 184,90 165,77 146,90 153,69 135,56 157,56" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
-                    <polygon points="165,45 170,58 184,58 173,66 177,79 165,71 153,79 157,66 146,58 160,58" fill="#fef08a"/>
-                  </g>
-                  <!-- 7. ÉGŐSOROK -->
-                  <path d="M 0 12 Q 150 42 300 10 Q 450 42 600 10 Q 750 42 900 12" fill="none" stroke="#2d1609" stroke-width="2.5"/>
-                  <circle cx="38" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
-                  <circle cx="92" cy="27" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/>
-                  <circle cx="150" cy="30" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="2"/>
-                  <circle cx="210" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="4"/>
-                  <circle cx="262" cy="19" r="6" fill="#f97316" style="color:#f97316" class="xmas-light" data-group="1"/>
-                  <circle cx="342" cy="20" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="3"/>
-                  <circle cx="395" cy="27" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/>
-                  <circle cx="450" cy="30" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
-                  <circle cx="505" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="1"/>
-                  <circle cx="558" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/>
-                  <circle cx="640" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="2"/>
-                  <circle cx="695" cy="27" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
-                  <circle cx="750" cy="30" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/>
-                  <circle cx="808" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
-                  <circle cx="862" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
-                  <circle cx="165" cy="112" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="2"/>
-                  <circle cx="138" cy="158" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="4"/>
-                  <circle cx="192" cy="162" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
-                  <circle cx="115" cy="212" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="3"/>
-                  <circle cx="162" cy="218" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/>
-                  <circle cx="212" cy="215" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/>
-                  <circle cx="95" cy="278" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
-                  <circle cx="142" cy="285" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/>
-                  <circle cx="188" cy="282" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
-                  <circle cx="235" cy="278" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="1"/>
-                  <circle cx="75" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/>
-                  <circle cx="122" cy="352" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/>
-                  <circle cx="172" cy="348" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/>
-                  <circle cx="218" cy="352" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/>
-                  <circle cx="255" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/>
-                  <circle cx="118" cy="395" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="3"/>
-                  <circle cx="205" cy="395" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
-
-                  <!-- 8. DINAMIKUS AJÁNDÉKDOBOZOK -->
-                  <g id="svg-presents-layer"></g>
-                </svg>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <div id="family-filters" class="flex flex-wrap gap-2"></div>
+        <div id="board-container" class="space-y-5"></div>
       </div>
 
       <!-- C) CSOPORTOK FÜL -->
@@ -732,6 +369,22 @@
     </div>
   </div>
 
+  <!-- ================= CSOPORT VÁLASZTÓ MODAL (FOGLALÁSHOZ) ================= -->
+  <div id="group-select-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-emerald-700 fade-in">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-extrabold text-lg text-emerald-950">🎄 Melyik fához kerül?</h3>
+        <button onclick="cancelGroupSelect()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 mb-4" id="group-select-desc"></p>
+      <select id="group-select-dropdown" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold mb-5"></select>
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="cancelGroupSelect()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Mégse</button>
+        <button type="button" onclick="confirmGroupSelect()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-5 py-2 rounded-xl shadow">Kiválaszt</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= BAL ALSÓ LEBEGŐ BEVÁSÁRLÓLISTA GOMB ================= -->
   <button id="floating-shopping-btn" onclick="openShoppingModal()" title="Karácsonyi Bevásárlólistám megnyitása"
     class="hidden fixed bottom-5 left-5 z-40 bg-gradient-to-br from-amber-100 to-[#fdfaf2] hover:from-white hover:to-amber-50 text-amber-950 border-2 border-amber-800/40 rounded-2xl p-3.5 shadow-2xl transition transform hover:scale-105 active:scale-95 flex items-center gap-2.5 group">
@@ -740,32 +393,113 @@
     <span id="floating-shopping-badge" class="bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow">0</span>
   </button>
 
+  <!-- ================= JOBB ALSÓ LEBEGŐ KARÁCSONYFA GOMB ================= -->
+  <button id="floating-tree-btn" onclick="openRoomModal()" title="Karácsonyi Szoba megnyitása"
+    class="hidden fixed bottom-5 right-5 z-40 bg-gradient-to-br from-emerald-900 to-green-900 hover:from-emerald-800 hover:to-green-800 border-2 border-emerald-700/50 rounded-2xl p-2.5 shadow-2xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center">
+    <svg width="40" height="40" viewBox="0 0 100 120" class="overflow-visible">
+      <rect x="42" y="100" width="16" height="20" rx="2" fill="#4e2611" />
+      <path d="M 50 20 L 10 65 Q 25 72 50 65 Q 75 72 90 65 Z" fill="#146934" stroke="#0c4521" stroke-width="2"/>
+      <path d="M 50 45 L 5 95 Q 25 105 50 95 Q 75 105 95 95 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/>
+      <path d="M 50 5 L 20 40 Q 35 48 50 42 Q 65 48 80 40 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/>
+      <path d="M 50 -10 L 25 20 Q 40 28 50 20 Q 60 28 75 20 Z" fill="#21a654" stroke="#157339" stroke-width="2"/>
+      <polygon points="50,-20 54,-10 64,-10 56,-2 59,8 50,2 41,8 44,-2 36,-10 46,-10" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
+      <circle cx="40" cy="10" r="3" fill="#ef4444" style="color:#ef4444" class="icon-tree-light" />
+      <circle cx="60" cy="20" r="3.5" fill="#facc15" style="color:#facc15" class="icon-tree-light" />
+      <circle cx="35" cy="35" r="3" fill="#38bdf8" style="color:#38bdf8" class="icon-tree-light" />
+      <circle cx="55" cy="45" r="3.5" fill="#ef4444" style="color:#ef4444" class="icon-tree-light" />
+      <circle cx="25" cy="60" r="3.5" fill="#facc15" style="color:#facc15" class="icon-tree-light" />
+      <circle cx="70" cy="55" r="3" fill="#4ade80" style="color:#4ade80" class="icon-tree-light" />
+      <circle cx="40" cy="70" r="4" fill="#38bdf8" style="color:#38bdf8" class="icon-tree-light" />
+      <circle cx="75" cy="85" r="3.5" fill="#ef4444" style="color:#ef4444" class="icon-tree-light" />
+      <circle cx="20" cy="85" r="3" fill="#4ade80" style="color:#4ade80" class="icon-tree-light" />
+    </svg>
+    <span id="floating-tree-badge" class="absolute -top-2 -left-2 bg-red-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow hidden">0</span>
+  </button>
+
   <!-- ================= TELJES KÉPERNYŐS BEVÁSÁRLÓLISTA MODAL ================= -->
   <div id="shopping-modal" onclick="closeShoppingModal()" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4 sm:p-8">
     <div class="w-full max-w-2xl flex justify-between items-center mb-3 px-1">
-      <button type="button" onclick="closeShoppingModal()"
-        class="bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 shadow-lg">
-        &larr; Vissza a menübe
-      </button>
+      <button type="button" onclick="closeShoppingModal()" class="bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 shadow-lg">&larr; Vissza a menübe</button>
       <span class="text-xs text-amber-200/80 hidden sm:inline">Kattints bárhová a listán kívül a bezáráshoz</span>
     </div>
-
     <div onclick="event.stopPropagation()" class="paper-notepad w-full max-w-2xl max-h-[82vh] overflow-y-auto rounded-3xl p-5 sm:p-8 pl-12 sm:pl-14 border-2 border-amber-900/30 shadow-2xl fade-in">
       <div class="w-28 h-6 bg-amber-200/60 border border-amber-300/50 mx-auto -mt-3 mb-4 rotate-[-2deg] shadow-sm"></div>
-
       <div class="flex justify-between items-center mb-2 gap-2 flex-wrap">
-        <h3 class="font-cursive text-3xl sm:text-4xl font-bold text-amber-950 tracking-wide">
-          🛒 Karácsonyi Bevásárlólistám
-        </h3>
-        <span id="shopping-list-counter" class="text-xs sm:text-sm font-bold bg-amber-900/10 text-amber-950 px-3 py-1 rounded-full">
-          0 / 0 beszerezve
-        </span>
+        <h3 class="font-cursive text-3xl sm:text-4xl font-bold text-amber-950 tracking-wide">🛒 Karácsonyi Bevásárlólistám</h3>
+        <span id="shopping-list-counter" class="text-xs sm:text-sm font-bold bg-amber-900/10 text-amber-950 px-3 py-1 rounded-full">0 / 0 beszerezve</span>
       </div>
-      <p class="text-xs sm:text-sm text-amber-900/75 mb-5">
-        Itt látod egyben, amiket mások listájáról lefoglaltál. Ha kipipálod, a csoportban automatikusan <b>Megvettem</b> státuszra vált (és bekerül a fa alá)!
-      </p>
+      <p class="text-xs sm:text-sm text-amber-900/75 mb-5">Itt látod egyben, amiket mások listájáról lefoglaltál. Ha kipipálod, a csoportban automatikusan <b>Megvettem</b> státuszra vált (és bekerül a fa alá)!</p>
       <div id="my-shopping-list-container" class="space-y-1.5 pb-4"></div>
     </div>
+  </div>
+
+  <!-- ================= TELJES KÉPERNYŐS KARÁCSONYI SZOBA MODAL ================= -->
+  <div id="room-modal" onclick="closeRoomModal()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-2 sm:p-4">
+    
+    <div class="w-full max-w-4xl flex justify-between items-center mb-3 px-2 flex-wrap gap-2">
+      <button type="button" onclick="closeRoomModal()" class="bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition shadow-lg shrink-0">
+        &larr; Vissza
+      </button>
+      <div class="flex items-center gap-2 flex-wrap justify-end flex-1">
+        <span id="room-group-label" class="bg-emerald-950/90 text-amber-200 border border-emerald-800 px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-lg text-center">🎄 Kiválasztott csoport fája</span>
+        <span id="room-presents-counter" class="bg-red-700 text-white border border-red-900 px-3 py-1.5 rounded-full text-xs sm:text-sm font-extrabold shadow-lg shrink-0">0 db ajándék</span>
+      </div>
+    </div>
+
+    <div onclick="event.stopPropagation()" class="w-full max-w-4xl rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-900/40 bg-[#6e3f23] relative fade-in">
+      <svg viewBox="0 0 900 540" class="w-full h-auto block">
+        <defs>
+          <pattern id="warm-wall-planks" width="45" height="400" patternUnits="userSpaceOnUse"><rect width="45" height="400" fill="#6b3d22"/><line x1="0" y1="0" x2="0" y2="400" stroke="#4e2a15" stroke-width="2.5"/><rect x="2" y="0" width="12" height="400" fill="#764528" opacity="0.35"/></pattern>
+          <pattern id="chimney-planks" width="44" height="400" patternUnits="userSpaceOnUse"><rect width="44" height="400" fill="#b96d38"/><line x1="0" y1="0" x2="0" y2="400" stroke="#8f4e22" stroke-width="2"/><rect x="4" y="0" width="14" height="400" fill="#c97d46" opacity="0.4"/></pattern>
+          <linearGradient id="warm-floor-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c87d44"/><stop offset="50%" stop-color="#b56932"/><stop offset="100%" stop-color="#965222"/></linearGradient>
+          <radialGradient id="hearth-warm-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/><stop offset="55%" stop-color="#ea580c" stop-opacity="0.22"/><stop offset="100%" stop-color="#ea580c" stop-opacity="0"/></radialGradient>
+          <linearGradient id="night-sky-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f2547"/><stop offset="65%" stop-color="#1e4976"/><stop offset="100%" stop-color="#3b6ea5"/></linearGradient>
+          <clipPath id="window-pane-clip"><rect x="612" y="62" width="226" height="246" rx="3"/></clipPath>
+          <pattern id="gift-stripes-green" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#15803d"/><rect width="5" height="10" fill="#22c55e"/></pattern>
+          <pattern id="gift-stripes-red" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#b91c1c"/><rect width="5" height="10" fill="#ef4444"/></pattern>
+        </defs>
+        <rect x="0" y="0" width="900" height="395" fill="url(#warm-wall-planks)"/><rect x="338" y="0" width="224" height="395" fill="url(#chimney-planks)" stroke="#4e2a15" stroke-width="3"/><rect x="0" y="384" width="900" height="14" fill="#432310" stroke="#2d1609" stroke-width="1.5"/><rect x="0" y="398" width="900" height="142" fill="url(#warm-floor-grad)"/>
+        <g stroke="#7c4219" stroke-width="1.8" opacity="0.65"><line x1="0" y1="422" x2="900" y2="422"/><line x1="0" y1="450" x2="900" y2="450"/><line x1="0" y1="484" x2="900" y2="484"/><line x1="0" y1="522" x2="900" y2="522"/><line x1="120" y1="398" x2="40" y2="540"/><line x1="250" y1="398" x2="195" y2="540"/><line x1="380" y1="398" x2="355" y2="540"/><line x1="520" y1="398" x2="545" y2="540"/><line x1="650" y1="398" x2="705" y2="540"/><line x1="780" y1="398" x2="860" y2="540"/></g>
+        <rect x="602" y="52" width="246" height="266" rx="4" fill="#7c4322" stroke="#432310" stroke-width="3"/>
+        <g clip-path="url(#window-pane-clip)">
+          <rect x="612" y="62" width="226" height="246" fill="url(#night-sky-grad)"/><circle cx="795" cy="98" r="16" fill="#fef9c3" opacity="0.85"/><path d="M 605 255 Q 665 200 735 235 T 845 215 L 845 315 L 605 315 Z" fill="#93c5fd" opacity="0.45"/><path d="M 605 275 Q 690 230 760 258 T 845 250 L 845 315 L 605 315 Z" fill="#e2e8f0"/>
+          <g fill="#1e3a5f"><polygon points="645,210 628,255 662,255"/><polygon points="645,192 632,228 658,228"/><polygon points="790,195 772,248 808,248"/><polygon points="790,175 776,215 804,215"/></g>
+          <polygon points="645,192 636,212 654,212" fill="#f8fafc" opacity="0.85"/><polygon points="790,175 780,198 800,198" fill="#f8fafc" opacity="0.85"/><path d="M 605 288 Q 665 268 730 285 T 845 278 L 845 315 L 605 315 Z" fill="#ffffff"/><path d="M 612 182 Q 640 172 670 180 Q 698 174 723 182 L 723 186 L 612 186 Z" fill="#ffffff" opacity="0.95"/><path d="M 727 182 Q 758 173 788 181 Q 815 174 838 182 L 838 186 L 727 186 Z" fill="#ffffff" opacity="0.95"/><path d="M 612 302 Q 660 290 723 302 Z" fill="#ffffff"/><path d="M 727 302 Q 785 290 838 302 Z" fill="#ffffff"/>
+          <g fill="#ffffff"><circle cx="635" cy="70" r="2.8" class="snow-particle" style="animation-duration: 4.2s; animation-delay: 0s;"/><circle cx="670" cy="65" r="2" class="snow-particle" style="animation-duration: 5.1s; animation-delay: 1.1s;"/><circle cx="705" cy="75" r="3.2" class="snow-particle" style="animation-duration: 3.8s; animation-delay: 0.4s;"/><circle cx="745" cy="68" r="2.2" class="snow-particle" style="animation-duration: 4.7s; animation-delay: 1.9s;"/><circle cx="780" cy="72" r="3" class="snow-particle" style="animation-duration: 3.6s; animation-delay: 0.7s;"/><circle cx="818" cy="66" r="2.4" class="snow-particle" style="animation-duration: 4.9s; animation-delay: 2.3s;"/><circle cx="652" cy="110" r="2.5" class="snow-particle" style="animation-duration: 4.4s; animation-delay: 2.7s;"/><circle cx="762" cy="115" r="2.8" class="snow-particle" style="animation-duration: 3.9s; animation-delay: 1.4s;"/></g>
+        </g>
+        <rect x="720" y="60" width="10" height="250" fill="#7c4322" stroke="#432310" stroke-width="1.5"/><rect x="610" y="182" width="230" height="10" fill="#7c4322" stroke="#432310" stroke-width="1.5"/><rect x="595" y="312" width="260" height="12" rx="3" fill="#5c3016" stroke="#3b1d0b" stroke-width="1.5"/>
+        <g transform="translate(450, 482)"><ellipse cx="0" cy="0" rx="165" ry="42" fill="#991b1b" stroke="#7f1d1d" stroke-width="3"/><ellipse cx="0" cy="0" rx="132" ry="33" fill="#dc2626"/><ellipse cx="0" cy="0" rx="98" ry="24" fill="#ea580c"/><ellipse cx="0" cy="0" rx="64" ry="15" fill="#fbbf24"/><ellipse cx="0" cy="0" rx="30" ry="7" fill="#991b1b"/></g>
+        <circle cx="450" cy="365" r="150" fill="url(#hearth-warm-glow)" class="fire-ambient"/>
+        <g><line x1="450" y1="52" x2="412" y2="78" stroke="#3b1d0b" stroke-width="2.5"/><line x1="450" y1="52" x2="488" y2="78" stroke="#3b1d0b" stroke-width="2.5"/><circle cx="450" cy="52" r="3.5" fill="#fbbf24"/><rect x="392" y="76" width="116" height="104" rx="3" fill="#5c3016" stroke="#3b1d0b" stroke-width="2.5"/><rect x="400" y="84" width="100" height="88" fill="#f8fafc"/><circle cx="450" cy="130" r="27" fill="none" stroke="#15803d" stroke-width="14"/><circle cx="450" cy="130" r="27" fill="none" stroke="#16a34a" stroke-width="8" stroke-dasharray="10 6"/><circle cx="430" cy="118" r="3" fill="#dc2626"/><circle cx="470" cy="120" r="3" fill="#dc2626"/><circle cx="428" cy="142" r="3" fill="#dc2626"/><circle cx="468" cy="144" r="3" fill="#dc2626"/><circle cx="450" cy="156" r="3" fill="#facc15"/><path d="M 450 103 C 436 92 428 105 446 108 Z" fill="#dc2626"/><path d="M 450 103 C 464 92 472 105 454 108 Z" fill="#dc2626"/><path d="M 447 106 L 440 122 L 447 119 Z" fill="#b91c1c"/><path d="M 453 106 L 460 122 L 453 119 Z" fill="#b91c1c"/><circle cx="450" cy="105" r="4" fill="#ef4444"/></g>
+        <g><path d="M 335 222 Q 380 198 440 218 Q 500 198 565 222" fill="none" stroke="#14532d" stroke-width="14" stroke-linecap="round"/><path d="M 340 222 Q 390 202 450 220 Q 510 202 560 222" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" stroke-dasharray="12 8"/><circle cx="450" cy="198" r="20" fill="#fbbf24" opacity="0.28"/><rect x="443" y="194" width="14" height="24" rx="2" fill="#fef08a"/><path d="M 450 182 C 446 189 447 194 450 194 C 453 194 454 189 450 182 Z" fill="#f97316"/><rect x="436" y="216" width="28" height="5" rx="2" fill="#dc2626"/></g>
+        <rect x="330" y="236" width="240" height="168" fill="#b45b32" stroke="#5c2c16" stroke-width="2.5"/>
+        <g fill="#9a4421" opacity="0.75"><rect x="336" y="244" width="38" height="14" rx="1"/><rect x="382" y="244" width="42" height="14" rx="1"/><rect x="478" y="244" width="42" height="14" rx="1"/><rect x="526" y="244" width="38" height="14" rx="1"/><rect x="334" y="264" width="26" height="14" rx="1"/><rect x="366" y="264" width="38" height="14" rx="1"/><rect x="500" y="264" width="38" height="14" rx="1"/><rect x="544" y="264" width="22" height="14" rx="1"/><rect x="336" y="286" width="40" height="14" rx="1"/><rect x="524" y="286" width="40" height="14" rx="1"/><rect x="334" y="308" width="28" height="14" rx="1"/><rect x="368" y="308" width="22" height="14" rx="1"/><rect x="510" y="308" width="22" height="14" rx="1"/><rect x="538" y="308" width="28" height="14" rx="1"/><rect x="336" y="330" width="42" height="14" rx="1"/><rect x="522" y="330" width="42" height="14" rx="1"/><rect x="334" y="352" width="26" height="14" rx="1"/><rect x="366" y="352" width="24" height="14" rx="1"/><rect x="512" y="352" width="24" height="14" rx="1"/><rect x="542" y="352" width="24" height="14" rx="1"/><rect x="336" y="374" width="40" height="14" rx="1"/><rect x="524" y="374" width="40" height="14" rx="1"/></g>
+        <g fill="#d48055" opacity="0.65"><rect x="432" y="244" width="38" height="14" rx="1"/><rect x="336" y="308" width="26" height="14" rx="1"/><rect x="524" y="330" width="36" height="14" rx="1"/></g>
+        <rect x="312" y="218" width="276" height="22" rx="4" fill="#6b381b" stroke="#3b1d0b" stroke-width="2.5"/><rect x="320" y="240" width="260" height="7" fill="#4e2710"/>
+        <path d="M 386 392 L 386 306 A 64 48 0 0 1 514 306 L 514 392 Z" fill="#2b1208" stroke="#4e2210" stroke-width="4"/><path d="M 396 392 L 396 312 A 54 40 0 0 1 504 312 L 504 392 Z" fill="#451a0a"/>
+        <g><path class="fire-outer" d="M 412 382 C 402 350 422 320 435 296 C 442 315 450 302 454 282 C 466 308 475 318 480 302 C 492 328 498 355 488 382 Z" fill="#ea580c"/><path class="fire-mid" d="M 422 382 C 415 355 430 332 442 312 C 448 328 455 310 460 298 C 470 322 484 350 478 382 Z" fill="#f97316"/><path class="fire-inner" d="M 432 382 C 428 362 440 342 450 324 C 460 342 472 362 468 382 Z" fill="#facc15"/><path class="fire-inner" d="M 442 382 C 440 368 446 355 450 345 C 454 355 460 368 458 382 Z" fill="#fef08a"/></g>
+        <g><rect x="415" y="374" width="70" height="12" rx="5" fill="#4e2611" transform="rotate(-6 450 380)"/><rect x="415" y="374" width="70" height="12" rx="5" fill="#3b1b0a" transform="rotate(7 450 380)"/><path d="M 408 384 L 492 384 M 420 376 L 414 392 M 480 376 L 486 392 M 450 376 L 450 392" stroke="#1c1917" stroke-width="3.5" stroke-linecap="round"/></g>
+        <rect x="318" y="392" width="264" height="18" rx="3" fill="#5c2c16" stroke="#3b1d0b" stroke-width="2"/>
+        <g transform="translate(362, 232) rotate(8)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><path d="M 2 22 L 25 22 M 2 28 L 24 28" stroke="#fef08a" stroke-width="2.5"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
+        <g transform="translate(436, 232) rotate(6)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><circle cx="13" cy="24" r="2" fill="#ffffff"/><circle cx="19" cy="30" r="2" fill="#ffffff"/><circle cx="9" cy="33" r="2" fill="#ffffff"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
+        <g transform="translate(508, 232) rotate(8)"><path d="M 0 0 L 26 0 L 24 36 C 24 44 36 46 34 54 C 32 60 16 60 8 56 C 0 52 2 42 2 34 Z" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/><circle cx="8" cy="48" r="7" fill="#15803d"/><rect x="-3" y="-4" width="32" height="13" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/></g>
+        <g><polygon points="628,430 636,430 632,462 624,462" fill="#3b1d0b"/><polygon points="752,430 760,430 764,462 756,462" fill="#3b1d0b"/><path d="M 622 280 Q 692 268 762 280 L 774 395 L 610 395 Z" fill="#1d6370" stroke="#113e47" stroke-width="2.5"/><path d="M 636 292 Q 692 282 748 292 L 754 385 L 630 385 Z" fill="#237685"/><rect x="646" y="328" width="52" height="48" rx="6" fill="#dc2626" stroke="#991b1b" stroke-width="2" transform="rotate(-4 672 352)"/><path d="M 598 355 Q 618 345 636 365 L 636 432 L 606 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/><path d="M 786 355 Q 766 345 748 365 L 748 432 L 778 432 Z" fill="#17505b" stroke="#113e47" stroke-width="2"/><rect x="626" y="382" width="132" height="32" rx="8" fill="#298696" stroke="#113e47" stroke-width="2"/><rect x="614" y="410" width="156" height="24" rx="4" fill="#17505b" stroke="#113e47" stroke-width="2"/></g>
+        <g><rect x="148" y="392" width="34" height="52" rx="3" fill="#4e2611" stroke="#2d1609" stroke-width="2"/><path d="M 165 255 L 42 405 Q 75 422 105 404 Q 135 424 165 406 Q 195 424 225 404 Q 255 422 288 405 Z" fill="#0f5229" stroke="#09381b" stroke-width="2"/><path d="M 165 205 L 58 345 Q 88 362 115 344 Q 140 362 165 346 Q 190 362 215 344 Q 242 362 272 345 Z" fill="#146934" stroke="#0c4521" stroke-width="2"/><path d="M 165 155 L 76 285 Q 102 300 125 285 Q 145 300 165 286 Q 185 300 205 285 Q 228 300 254 285 Z" fill="#177d3e" stroke="#0f5229" stroke-width="2"/><path d="M 165 110 L 96 225 Q 118 238 136 225 Q 152 238 165 226 Q 178 238 194 225 Q 212 238 234 225 Z" fill="#1b9148" stroke="#136331" stroke-width="2"/><path d="M 165 72 L 116 168 Q 140 180 165 168 Q 190 180 214 168 Z" fill="#21a654" stroke="#157339" stroke-width="2"/><path d="M 122 155 Q 165 182 212 162" fill="none" stroke="#fbbf24" stroke-width="3" stroke-dasharray="4 4"/><path d="M 98 218 Q 165 252 232 224" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/><path d="M 78 282 Q 165 322 252 288" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-dasharray="4 4"/><path d="M 58 346 Q 165 392 270 352" fill="none" stroke="#fbbf24" stroke-width="4" stroke-dasharray="5 5"/><circle cx="152" cy="135" r="7" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="185" cy="195" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="128" cy="202" r="7.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="158" cy="255" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="212" cy="265" r="7.5" fill="#9333ea" stroke="#6b21a8" stroke-width="1.5"/><circle cx="108" cy="272" r="8" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="135" cy="325" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="192" cy="332" r="8.5" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/><circle cx="88" cy="378" r="9" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><circle cx="162" cy="382" r="9" fill="#eab308" stroke="#a16207" stroke-width="1.5"/><circle cx="235" cy="375" r="8.5" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/><polygon points="165,36 173,56 195,56 177,69 184,90 165,77 146,90 153,69 135,56 157,56" fill="#facc15" stroke="#ca8a04" stroke-width="2"/><polygon points="165,45 170,58 184,58 173,66 177,79 165,71 153,79 157,66 146,58 160,58" fill="#fef08a"/></g>
+        <!-- ÉGŐSOROK -->
+        <path d="M 0 12 Q 150 42 300 10 Q 450 42 600 10 Q 750 42 900 12" fill="none" stroke="#2d1609" stroke-width="2.5"/><circle cx="38" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/><circle cx="92" cy="27" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/><circle cx="150" cy="30" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="2"/><circle cx="210" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="4"/><circle cx="262" cy="19" r="6" fill="#f97316" style="color:#f97316" class="xmas-light" data-group="1"/><circle cx="342" cy="20" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="3"/><circle cx="395" cy="27" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/><circle cx="450" cy="30" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="505" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="1"/><circle cx="558" cy="20" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/><circle cx="640" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="2"/><circle cx="695" cy="27" r="6" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="750" cy="30" r="6" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="1"/><circle cx="808" cy="27" r="6" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="862" cy="20" r="6" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="165" cy="112" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="2"/><circle cx="138" cy="158" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="4"/><circle cx="192" cy="162" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/><circle cx="115" cy="212" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="3"/><circle cx="162" cy="218" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/><circle cx="212" cy="215" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="2"/><circle cx="95" cy="278" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="142" cy="285" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="3"/><circle cx="188" cy="282" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="235" cy="278" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="1"/><circle cx="75" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="1"/><circle cx="122" cy="352" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="4"/><circle cx="172" cy="348" r="5" fill="#ef4444" style="color:#ef4444" class="xmas-light" data-group="3"/><circle cx="218" cy="352" r="5" fill="#4ade80" style="color:#4ade80" class="xmas-light" data-group="2"/><circle cx="255" cy="342" r="5" fill="#facc15" style="color:#facc15" class="xmas-light" data-group="4"/><circle cx="118" cy="395" r="5" fill="#fef08a" style="color:#fef08a" class="xmas-light" data-group="3"/><circle cx="205" cy="395" r="5" fill="#38bdf8" style="color:#38bdf8" class="xmas-light" data-group="1"/>
+        
+        <!-- DINAMIKUS AJÁNDÉKDOBOZOK -->
+        <g id="svg-presents-layer"></g>
+      </svg>
+    </div>
+
+    <!-- Lebegő csoportválasztó buborékok a szoba ALATT -->
+    <div onclick="event.stopPropagation()" class="w-full max-w-4xl mt-3 flex justify-center fade-in">
+      <div id="modal-room-group-selector" class="flex flex-wrap justify-center gap-2">
+        <!-- JS tölti fel -->
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -800,7 +534,6 @@
     let currentUser = localStorage.getItem('xmas_v3_user') || null;
     let selectedGroupCode = 'ALL_MY_GROUPS';
     let selectedPersonFilter = 'ALL';
-    let isRoomView = false;
     let allUsers = [];
     let allGroups = [];
     let allWishes = [];
@@ -919,7 +652,27 @@
       return found ? found.name : code;
     }
 
-    function resolveTargetGroupForWish(ownerName) {
+    // --- ÚJ, ELEGÁNS CSOPORTVÁLASZTÓ LOGIKA ---
+    let groupSelectResolve = null;
+
+    function confirmGroupSelect() {
+      const selected = document.getElementById('group-select-dropdown').value;
+      document.getElementById('group-select-modal').classList.add('hidden');
+      if (groupSelectResolve) {
+        groupSelectResolve(selected);
+        groupSelectResolve = null;
+      }
+    }
+
+    function cancelGroupSelect() {
+      document.getElementById('group-select-modal').classList.add('hidden');
+      if (groupSelectResolve) {
+        groupSelectResolve(null);
+        groupSelectResolve = null;
+      }
+    }
+
+    async function resolveTargetGroupForWishAsync(ownerName) {
       const myGroups = getCurrentUserObj().groups || [];
       const ownerObj = allUsers.find(u => u.username === ownerName);
       const ownerGroups = ownerObj?.groups || [];
@@ -934,18 +687,17 @@
       }
 
       if (sharedGroups.length > 1) {
-        const optionsText = sharedGroups
-          .map((code, idx) => `${idx + 1}: ${getGroupNameByCode(code)} (${code})`)
-          .join('\n');
-        const choice = prompt(
-          `Több közös csoportotok is van ${ownerName}-val/vel!\nÍrd be a számát, amelyik csoport fája alá szánod ezt az ajándékot:\n\n${optionsText}`,
-          "1"
-        );
-        const parsedIdx = parseInt(choice, 10) - 1;
-        if (!isNaN(parsedIdx) && sharedGroups[parsedIdx]) {
-          return sharedGroups[parsedIdx];
-        }
-        return sharedGroups[0];
+        return new Promise((resolve) => {
+          groupSelectResolve = resolve;
+          const dropdown = document.getElementById('group-select-dropdown');
+          document.getElementById('group-select-desc').innerHTML = `Több közös csoportotok is van <b>${escapeHtml(ownerName)}</b>-val/vel! Válaszd ki, melyik fa alá szánod ezt az ajándékot:`;
+          
+          dropdown.innerHTML = sharedGroups.map(code => 
+            `<option value="${escapeHtml(code)}">${escapeHtml(getGroupNameByCode(code))} (${escapeHtml(code)})</option>`
+          ).join('');
+          
+          document.getElementById('group-select-modal').classList.remove('hidden');
+        });
       }
 
       return myGroups[0] || null;
@@ -1003,6 +755,7 @@
       document.getElementById('app-view').classList.remove('hidden');
       document.getElementById('user-controls').classList.remove('hidden');
       document.getElementById('floating-shopping-btn').classList.remove('hidden');
+      document.getElementById('floating-tree-btn').classList.remove('hidden');
       document.getElementById('current-user-display').textContent = currentUser;
       loadData();
     }
@@ -1014,7 +767,9 @@
       document.getElementById('app-view').classList.add('hidden');
       document.getElementById('user-controls').classList.add('hidden');
       document.getElementById('floating-shopping-btn').classList.add('hidden');
+      document.getElementById('floating-tree-btn').classList.add('hidden');
       closeShoppingModal();
+      closeRoomModal();
       document.getElementById('auth-pin').value = '';
     }
 
@@ -1032,23 +787,6 @@
         }
       });
       loadData();
-    }
-
-    function toggleRoomFlip() {
-      isRoomView = !isRoomView;
-      const flipCard = document.getElementById('board-flip-card');
-      const toggleBtn = document.getElementById('flip-toggle-btn');
-
-      if (isRoomView) {
-        flipCard.classList.add('is-flipped');
-        toggleBtn.innerHTML = '↩ Vissza a lista nézetre';
-        toggleBtn.className = 'w-full sm:w-auto justify-center bg-gradient-to-r from-emerald-800 to-green-900 hover:from-emerald-900 hover:to-green-950 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-emerald-500/80 transition transform active:scale-95 flex items-center gap-2';
-        renderBoard();
-      } else {
-        flipCard.classList.remove('is-flipped');
-        toggleBtn.innerHTML = '🎁 Nézzük hány ajándék van a fa alatt?';
-        toggleBtn.className = 'w-full sm:w-auto justify-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-2xl shadow-md border-2 border-red-400/80 transition transform active:scale-95 flex items-center gap-2';
-      }
     }
 
     const PRESENT_SLOTS = [
@@ -1075,13 +813,13 @@
 
       if (labelEl) {
         if (selectedGroupCode === 'ALL_MY_GROUPS') {
-          labelEl.textContent = '🎄 Minden csoportom (összesített fa)';
+          labelEl.textContent = '🎄 Minden csoportom összesítve';
         } else {
-          labelEl.textContent = `🎄 ${getGroupNameByCode(selectedGroupCode)} – közös karácsonyfa`;
+          labelEl.textContent = `🎄 ${getGroupNameByCode(selectedGroupCode)} karácsonyfája`;
         }
       }
       if (counterEl) {
-        counterEl.textContent = `${boughtCount} db megvett ajándék a fa alatt`;
+        counterEl.textContent = `${boughtCount} db ajándék a fa alatt`;
       }
 
       if (!layer) return;
@@ -1147,6 +885,14 @@
       setInterval(triggerRandomGroup, 750);
     }
     window.addEventListener('DOMContentLoaded', startChristmasLights);
+
+    function triggerTreeIconBlink() {
+      const lights = document.querySelectorAll('.icon-tree-light');
+      lights.forEach(l => l.classList.add('blinking'));
+      setTimeout(() => {
+        lights.forEach(l => l.classList.remove('blinking'));
+      }, 3500);
+    }
 
     async function createNewGroup(e) {
       e.preventDefault();
@@ -1322,6 +1068,9 @@
           await supabaseClient.from('wishes').insert([fallbackItem]);
         }
       }
+      
+      if (isSecret) triggerTreeIconBlink();
+      
       await loadData();
     }
 
@@ -1352,9 +1101,16 @@
       if (!wish) return;
 
       const claimedBy = newStatus === 'available' ? null : currentUser;
-      const claimedInGroup = newStatus === 'available'
-        ? null
-        : (wish.claimed_in_group || resolveTargetGroupForWish(wish.owner_name));
+      
+      let claimedInGroup = null;
+      if (newStatus !== 'available') {
+        if (wish.claimed_in_group) {
+          claimedInGroup = wish.claimed_in_group;
+        } else {
+          claimedInGroup = await resolveTargetGroupForWishAsync(wish.owner_name);
+          if (claimedInGroup === null) return;
+        }
+      }
 
       if (wish.is_secret && newStatus === 'available') {
         if (isDemoMode) {
@@ -1385,6 +1141,11 @@
             .eq('id', id);
         }
       }
+      
+      if (newStatus === 'bought') {
+        triggerTreeIconBlink();
+      }
+      
       await loadData();
     }
 
@@ -1441,10 +1202,10 @@
       const floatingBadge = document.getElementById('floating-shopping-badge');
       if (floatingBadge) {
         const remainingCount = myClaimedItems.length - boughtCount;
-        floatingBadge.textContent = `${remainingCount} db`;
+        floatingBadge.textContent = `${remainingCount}`;
         floatingBadge.className = remainingCount > 0
-          ? "bg-red-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow"
-          : "bg-emerald-700 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow";
+          ? "bg-red-600 text-white text-[11px] font-extrabold px-1.5 py-0.5 rounded-full shadow absolute -top-2 -right-2"
+          : "bg-emerald-700 text-white text-[11px] font-extrabold px-1.5 py-0.5 rounded-full shadow absolute -top-2 -right-2 hidden";
       }
 
       if (myClaimedItems.length === 0) {
@@ -1502,6 +1263,16 @@
       const modal = document.getElementById('shopping-modal');
       if (modal) modal.classList.add('hidden');
     }
+    
+    function openRoomModal() {
+      renderBoard();
+      document.getElementById('room-modal').classList.remove('hidden');
+    }
+
+    function closeRoomModal() {
+      const modal = document.getElementById('room-modal');
+      if (modal) modal.classList.add('hidden');
+    }
 
     async function toggleShoppingItemBought(id, isChecked) {
       const targetStatus = isChecked ? 'bought' : 'reserved';
@@ -1531,6 +1302,7 @@
       const groupSelector = document.getElementById('board-group-selector');
       const filtersContainer = document.getElementById('family-filters');
       const boardContainer = document.getElementById('board-container');
+      const modalGroupSelector = document.getElementById('modal-room-group-selector');
 
       const userObj = getCurrentUserObj();
       const myGroupCodes = userObj.groups || [];
@@ -1538,6 +1310,7 @@
       if (myGroupCodes.length === 0) {
         groupSelector.innerHTML = '';
         filtersContainer.innerHTML = '';
+        if (modalGroupSelector) modalGroupSelector.innerHTML = '';
         boardContainer.innerHTML = `
           <div class="bg-white p-8 rounded-2xl border-2 border-red-200 text-center space-y-3">
             <div class="text-3xl">👨‍👩‍👧‍👦</div>
@@ -1551,20 +1324,39 @@
         return;
       }
 
-      groupSelector.innerHTML = `
-        <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+      const groupButtonsHTML = `
+        <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 shadow scale-105' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
           🌟 Minden csoportom (${myGroupCodes.length})
         </button>
         ${myGroupCodes.map(code => {
           const grp = allGroups.find(g => g.code === code) || { name: code, code };
           const active = selectedGroupCode === code;
           return `
-            <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${active ? 'bg-amber-400 text-emerald-950 shadow' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
+            <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-3 py-2 rounded-xl text-xs font-extrabold transition ${active ? 'bg-amber-400 text-emerald-950 shadow scale-105' : 'bg-emerald-950/60 text-emerald-100 hover:bg-emerald-950'}">
               ${escapeHtml(grp.name)}
             </button>
           `;
         }).join('')}
       `;
+
+      groupSelector.innerHTML = groupButtonsHTML;
+      
+      if (modalGroupSelector) {
+        modalGroupSelector.innerHTML = `
+          <button onclick="selectBoardGroup('ALL_MY_GROUPS')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition shadow-lg ${selectedGroupCode === 'ALL_MY_GROUPS' ? 'bg-amber-400 text-emerald-950 scale-105' : 'bg-white/90 text-emerald-950 hover:bg-white'}">
+            🌟 Minden csoportom
+          </button>
+          ${myGroupCodes.map(code => {
+            const grp = allGroups.find(g => g.code === code) || { name: code, code };
+            const active = selectedGroupCode === code;
+            return `
+              <button onclick="selectBoardGroup('${escapeHtml(code)}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition shadow-lg ${active ? 'bg-amber-400 text-emerald-950 scale-105' : 'bg-white/90 text-emerald-950 hover:bg-white'}">
+                ${escapeHtml(grp.name)}
+              </button>
+            `;
+          }).join('')}
+        `;
+      }
 
       const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
       const visibleUsers = allUsers
