@@ -1777,12 +1777,32 @@
       const isMine = buyers.includes(currentUser);
       const others = buyers.filter(b => b !== currentUser);
       
+      const myGroupCodes = getCurrentUserObj().groups || [];
+      const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
+
       let buyersDisplay = escapeHtml(item.claimed_by || '');
-      if (buyers.length > 1) {
-         if (isMine) {
-             buyersDisplay = `Te és még ${others.length} fő`;
+      let isHidden = false;
+
+      if (buyers.length > 0) {
+         // Csak azokat a vásárlókat tartjuk meg, akik benne vannak az aktuális nézet csoportjai(i)ban
+         let knownBuyers = buyers.filter(b => {
+             if (b === currentUser) return true; // Magamat mindig ismerem
+             const bObj = allUsers.find(u => u.username === b);
+             return (bObj?.groups || []).some(g => activeGroupCodes.includes(g));
+         });
+
+         if (knownBuyers.length === 0) {
+             // Ha minden vásárló "idegen" (nem tagja a kiválasztott csoportnak)
+             isHidden = true;
          } else {
-             buyersDisplay = buyers.map(escapeHtml).join(', ');
+             if (isMine) {
+                 buyersDisplay = others.length > 0 ? `Te és még ${others.length} fő` : `Te`;
+             } else {
+                 buyersDisplay = knownBuyers.map(escapeHtml).join(', ');
+                 if (buyers.length > knownBuyers.length) {
+                     buyersDisplay += ` (és mások)`;
+                 }
+             }
          }
       }
 
@@ -1793,10 +1813,18 @@
 
       if (isBought) {
         cardStyle = "bg-emerald-100/90 border-2 border-emerald-500 shadow-sm";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${buyersDisplay} megvette!${groupLabel}</span>`;
+        if (isHidden) {
+          statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ Egy másik csoportban megvették</span>`;
+        } else {
+          statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-sm">✅ ${buyersDisplay} megvette!${groupLabel}</span>`;
+        }
       } else if (isReserved) {
         cardStyle = "bg-amber-50/90 border-2 border-amber-400";
-        statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${buyersDisplay} lefoglalta${groupLabel}</span>`;
+        if (isHidden) {
+          statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 Egy másik csoportban lefoglalták</span>`;
+        } else {
+          statusBadge = `<span class="inline-flex items-center gap-1 text-xs font-extrabold bg-amber-500 text-white px-2.5 py-1 rounded-lg shadow-sm">🛒 ${buyersDisplay} lefoglalta${groupLabel}</span>`;
+        }
       }
 
       return `
