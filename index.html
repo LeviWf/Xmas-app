@@ -229,7 +229,7 @@
           📝 Saját Listám
         </button>
         <button onclick="switchTab('board')" id="tab-board" class="py-2.5 px-1.5 sm:px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white">
-          🎄 Családi Táblák
+          🎄 Táblák
         </button>
         <button onclick="switchTab('groups')" id="tab-groups" class="py-2.5 px-1.5 sm:px-2 text-xs sm:text-sm font-bold rounded-xl transition text-emerald-100 hover:text-white">
           👨‍👩‍👧‍👦 Csoportjaim
@@ -275,7 +275,7 @@
         </div>
       </div>
 
-      <!-- B) CSALÁDI TÁBLÁK FÜL (Kártyák és szűrők) -->
+      <!-- B) TÁBLÁK FÜL (Kártyák és szűrők) -->
       <div id="section-board" class="hidden space-y-4 w-full">
         
         <div class="bg-gradient-to-r from-emerald-900 to-green-900 text-white p-4 sm:p-5 rounded-2xl shadow-md w-full overflow-hidden">
@@ -637,10 +637,7 @@
       </svg>
     </div>
 
-    <!-- Lebegő csoportválasztó buborékok a szoba ALATT (Ezt is frissíthetjük legördülőre, ha kell, 
-         de ez csak a modál alján van, hagyhatjuk az egyszerűség kedvéért így, vagy el is rejthetjük. 
-         A kérés a Családi Táblák fülre vonatkozott, de a biztonság kedvéért itt is gombok helyett gombokat hagyok, 
-         mert ez egy egyedi "szoba nézet") -->
+    <!-- Lebegő csoportválasztó buborékok a szoba ALATT -->
     <div onclick="event.stopPropagation()" class="w-full max-w-4xl mt-3 flex justify-center fade-in">
       <div id="modal-room-group-selector" class="flex flex-wrap justify-center gap-2">
         <!-- JS tölti fel -->
@@ -1508,7 +1505,7 @@
       if (myClaimedItems.length === 0) {
         container.innerHTML = `
           <div class="py-4 font-cursive text-xl sm:text-2xl text-amber-900/60 italic">
-            Még nem foglaltál le egyetlen ajándékot sem a Családi Táblákról... ✏️
+            Még nem foglaltál le egyetlen ajándékot sem a Táblákról... ✏️
           </div>`;
         return;
       }
@@ -1667,12 +1664,19 @@
       }
 
       const activeGroupCodes = selectedGroupCode === 'ALL_MY_GROUPS' ? myGroupCodes : [selectedGroupCode];
+      
+      // LÁTHATÓ USEREK A TÁBLÁN (Saját magamat NEM látom)
       const visibleUsers = allUsers
         .filter(u => u.username !== currentUser && (u.groups || []).some(code => activeGroupCodes.includes(code)))
         .map(u => u.username);
 
+      // FA ALATTI AJÁNDÉKOKHOZ AZ ÖSSZES USER KELL (Saját magam is, hogy a nekem vett ajándékok is látszódjanak)
+      const usersInTree = allUsers
+        .filter(u => (u.groups || []).some(code => activeGroupCodes.includes(code)))
+        .map(u => u.username);
+
       const boughtInCurrentGroup = allWishes.filter(w => {
-        if (!visibleUsers.includes(w.owner_name) || w.status !== 'bought') return false;
+        if (!usersInTree.includes(w.owner_name) || w.status !== 'bought') return false;
         if (selectedGroupCode === 'ALL_MY_GROUPS') {
           return myGroupCodes.some(code => doesWishBelongToGroupTree(w, code));
         }
