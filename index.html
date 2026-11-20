@@ -348,7 +348,7 @@
     </div>
   </main>
 
-  <!-- ================= SZERKESZTÉS MODAL (ÚJ) ================= -->
+  <!-- ================= SZERKESZTÉS MODAL ================= -->
   <div id="edit-wish-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-600 fade-in">
       <div class="flex justify-between items-center mb-3">
@@ -385,7 +385,7 @@
     </div>
   </div>
 
-  <!-- ================= KÖZÖS AJÁNDÉK MODAL (ÚJ) ================= -->
+  <!-- ================= KÖZÖS AJÁNDÉK MODAL ================= -->
   <div id="co-buy-modal" class="fixed inset-0 bg-emerald-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-600 fade-in">
       <div class="flex justify-between items-center mb-3">
@@ -417,7 +417,7 @@
         <button onclick="closeSecretModal()" class="text-slate-400 hover:text-red-600 text-2xl font-bold">&times;</button>
       </div>
       <p class="text-xs text-slate-600 mb-4">
-        Olyan ajándékot vettél valakinek, ami nincs a listáján? Írd fel ide! <b>Ő sosem látja</b> a saját listáján, de a többiek látják a Táblákon, és bekerül az adott csoport fája alá.
+        Olyan ajándékot tervezel venni valakinek, ami nincs a listáján? Írd fel ide! <b>Ő sosem látja</b> a saját listáján, de a többiek látják a Táblákon, és bekerül a bevásárlólistádra is. Amint megvetted, átállíthatod Megvettem státuszra!
       </p>
       <form onsubmit="addWish(event, true)" class="space-y-3">
         <div>
@@ -438,7 +438,7 @@
         </div>
         <div class="flex justify-end gap-2 pt-3">
           <button type="button" onclick="closeSecretModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Mégse</button>
-          <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-2 rounded-xl shadow">✅ Felírás (Megvéve)</button>
+          <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-5 py-2 rounded-xl shadow">🛒 Felírás (Lefoglalva)</button>
         </div>
       </form>
     </div>
@@ -1216,8 +1216,8 @@
           link: '',
           note: document.getElementById('secret-note').value.trim(),
           priority: 'normal',
-          status: 'bought',
-          claimed_by: currentUser, // A titkosat aki felírja, egyből meg is vette
+          status: 'reserved',
+          claimed_by: currentUser,
           claimed_in_group: targetGroupCode,
           is_secret: true,
           deleted_by_owner: false,
@@ -1238,8 +1238,6 @@
           await supabaseClient.from('wishes').insert([fallbackItem]);
         }
       }
-      
-      if (isSecret) triggerTreeIconBlink();
       
       await loadData();
     }
@@ -1321,7 +1319,6 @@
       const usersContainer = document.getElementById('co-buy-users');
       const emptyMsg = document.getElementById('co-buy-empty-msg');
       
-      // Megkeressük azokat a felhasználókat, akik mind az ünneppelttel, mind velem (currentUser) közös csoportban vannak
       const ownerObj = allUsers.find(u => u.username === wish.owner_name);
       const myGroups = getCurrentUserObj().groups || [];
       const ownerGroups = ownerObj?.groups || [];
@@ -1378,14 +1375,10 @@
       
       if (newStatus !== 'available') {
         if (customBuyersString) {
-          // Ha direkt küldtünk stringet (pl. közös vásárlás gombból)
           newClaimedBy = customBuyersString;
         } else if (wish.claimed_by && wish.claimed_by.split(' | ').includes(currentUser)) {
-          // Ha már szerepelünk benne (pl. csak reserved-ről bought-ra váltunk a bevásárlólistán), 
-          // tartsuk meg az eddigi listát (nehogy kiüssük a közös vásárlókat)
           newClaimedBy = wish.claimed_by;
         } else {
-          // Sima egyéni foglalás/vásárlás
           newClaimedBy = currentUser;
         }
       }
@@ -1585,9 +1578,7 @@
         return wish.claimed_in_group === groupCode;
       }
 
-      // Visszafelé kompatibilitás a régi "claimed_in_group" nélküli elemekhez
       const ownerObj = allUsers.find(u => u.username === wish.owner_name);
-      // Válasszuk ki az első vásárlót a közös listából (ha többen vannak)
       const firstBuyer = wish.claimed_by ? wish.claimed_by.split(' | ')[0] : null;
       const buyerObj = allUsers.find(u => u.username === firstBuyer);
       
@@ -1784,15 +1775,13 @@
       let isHidden = false;
 
       if (buyers.length > 0) {
-         // Csak azokat a vásárlókat tartjuk meg, akik benne vannak az aktuális nézet csoportjai(i)ban
          let knownBuyers = buyers.filter(b => {
-             if (b === currentUser) return true; // Magamat mindig ismerem
+             if (b === currentUser) return true;
              const bObj = allUsers.find(u => u.username === b);
              return (bObj?.groups || []).some(g => activeGroupCodes.includes(g));
          });
 
          if (knownBuyers.length === 0) {
-             // Ha minden vásárló "idegen" (nem tagja a kiválasztott csoportnak)
              isHidden = true;
          } else {
              if (isMine) {
